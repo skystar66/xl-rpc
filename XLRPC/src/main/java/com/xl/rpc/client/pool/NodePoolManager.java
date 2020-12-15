@@ -5,6 +5,7 @@ import com.xl.rpc.client.RpcClient;
 import com.xl.rpc.client.connect.ActionConnectionCache;
 import com.xl.rpc.client.connect.ConnectionCache;
 import com.xl.rpc.client.loadbalance.weight.ActionNodeWeight;
+import com.xl.rpc.cluster.ClusterCenter;
 import com.xl.rpc.config.ServerConfig;
 import com.xl.rpc.zk.NodeInfo;
 import com.xl.rpc.zookeeper.ZkHelp;
@@ -53,8 +54,10 @@ public class NodePoolManager {
                 /**获取当前节点数据*/
                 String nodeData = zkHelp.getValue(ServerConfig.getString(ServerConfig.KEY_RPC_ZK_PATH)+
                         "/"+node);
+
                 NodeInfo nodeInfo = JSON.parseObject(nodeData, NodeInfo.class);
                 nodeInfos.add(nodeInfo);
+                ClusterCenter.getInstance().listenerServerRpcSize(node);
             } catch (Exception e) {
                 logger.error("onNodeDataChange.parseObject", e);
             }
