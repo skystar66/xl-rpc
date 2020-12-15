@@ -57,7 +57,7 @@ public class NodePoolManager {
 
                 NodeInfo nodeInfo = JSON.parseObject(nodeData, NodeInfo.class);
                 nodeInfos.add(nodeInfo);
-                ClusterCenter.getInstance().listenerServerRpcSize(node);
+                ClusterCenter.getInstance().listenerServerRpcConfig(node);
             } catch (Exception e) {
                 logger.error("onNodeDataChange.parseObject", e);
             }
