@@ -80,17 +80,16 @@ public class ClusterCenter {
 
 
     /**
-     * Server RPC连接
+     * 监听serverRpc 配置信息
      */
-    public void listenerServerRpcSize(String ip) {
+    public void listenerServerRpcConfig(String ip) {
 
         String listenerPath = ServerConfig.getString(ServerConfig.KEY_RPC_ZK_PATH) + "/" + ip;
         IZkDataListener listener = new IZkDataListener() {
             @Override
             public void handleDataChange(String dataPath, byte[] data) throws Exception {
                 // 监听到子节点变化 更新cluster
-                log.info("----->>>>> Starting handle data change " + listenerPath + "/" + dataPath + " data=" + new String(data));
-
+                log.info("----->>>>> Starting handle data change " + "/" + dataPath + " data=" + new String(data));
                 String dataStr = new String(data);
                 List<NodeInfo> nodeInfos = new ArrayList<>();
                 try {
