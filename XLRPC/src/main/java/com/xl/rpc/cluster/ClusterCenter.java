@@ -58,8 +58,8 @@ public class ClusterCenter {
                 List<NodeInfo> nodeInfos = new ArrayList<>();
                 for (String node : currentChildren) {
                     try {
-                        String nodeData =zkHelp.getValue(ServerConfig.getString(ServerConfig.KEY_RPC_ZK_PATH)+
-                                "/"+node);
+                        String nodeData = zkHelp.getValue(ServerConfig.getString(ServerConfig.KEY_RPC_ZK_PATH) +
+                                "/" + node);
                         if (StringUtils.isEmpty(nodeData)) {
                             return;
                         }
@@ -79,38 +79,40 @@ public class ClusterCenter {
     }
 
 
-
     /**
      * Server RPC连接
      */
     public void listenerServerRpcSize(String ip) {
-        serverRpcList = zkHelp.getChildren(ServerConfig.getString(ServerConfig.KEY_RPC_ZK_PATH)+"/"+ip);
-        log.info("serverRpcList:{}", serverRpcList);
-        IZkChildListener listener = new IZkChildListener() {
-            public void handleChildChange(String parentPath, List<String> currentChildren) throws Exception {
-                // 监听到子节点变化 更新cluster
-                log.info("----->>>>> Starting handle children change " + parentPath + "/" + currentChildren + " size=" + currentChildren.size());
-                serverRpcList = currentChildren;
-                List<NodeInfo> nodeInfos = new ArrayList<>();
-                for (String node : currentChildren) {
-                    try {
 
-                        NodeInfo nodeInfo = JSON.parseObject(node, NodeInfo.class);
-                        if (nodeInfo != null) nodeInfos.add(nodeInfo);
-                    } catch (Exception e) {
-                        log.error("onNodeDataChange.parseObject", e);
-                    }
+        String listenerPath = ServerConfig.getString(ServerConfig.KEY_RPC_ZK_PATH) + "/" + ip;
+        IZkDataListener listener = new IZkDataListener() {
+            @Override
+            public void handleDataChange(String dataPath, byte[] data) throws Exception {
+                // 监听到子节点变化 更新cluster
+                log.info("----->>>>> Starting handle data change " + listenerPath + "/" + dataPath + " data=" + new String(data));
+
+                String dataStr = new String(data);
+                List<NodeInfo> nodeInfos = new ArrayList<>();
+                try {
+                    NodeInfo nodeInfo = JSON.parseObject(dataStr, NodeInfo.class);
+                    if (nodeInfo != null) nodeInfos.add(nodeInfo);
+                } catch (Exception e) {
+                    log.error("onNodeDataChange.parseObject", e);
                 }
+
                 NodePoolManager.getInstance().onNodeChange(nodeInfos);
             }
+
+            @Override
+            public void handleDataDeleted(String s) throws Exception {
+
+            }
         };
+
         // 监控节点变更
-        zkHelp.subscribeChildChanges(ServerConfig.getString(ServerConfig.KEY_RPC_ZK_PATH)+"/"+ip
+        zkHelp.subscribeDataChanges(listenerPath
                 , listener);
     }
-
-
-
 
 
     /**
@@ -127,6 +129,7 @@ public class ClusterCenter {
                 log.info("----->>>>> Starting rpcPoolSize data change " + parentPath + " rpcPoolSize=" + rpcPoolSize);
 //                eventListener.rpcPoolChange(Integer.parseInt(rpcPoolSize));
             }
+
             @Override
             public void handleDataDeleted(String s) throws Exception {
             }
