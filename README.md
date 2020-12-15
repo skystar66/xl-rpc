@@ -3,8 +3,6 @@
 一个自动注册扩展服务、netty长连接池的高性能轻量级RPC框架
 <br/>
 
-[![netty][nettysvg]][netty] [![zk][zksvg]][zk]  [![License][licensesvg]][license]
-
   * 使用zookeeper服务发现,自动注册扩展服务
   * 使用长连接TCP池,netty作为网络IO,支持全双工通信,高性能
   * 消息发送支持异步/同步,NIO
