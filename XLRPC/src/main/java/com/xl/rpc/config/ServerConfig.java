@@ -1,7 +1,6 @@
 package com.xl.rpc.config;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Properties;
 
 public class ServerConfig {
@@ -34,9 +33,12 @@ public class ServerConfig {
     public static final String KEY_RPC_NODE_THREAD = KEY_PREFIX+"node.thread";
     public final static String KEY_RPC_NODE_ZIP = KEY_PREFIX+"node.zip";
     public static final String KEY_RPC_CONNECT_TIMEOUT = KEY_PREFIX+"connect.timeout";
+    //是否注册zk
+    public static final String KEY_RPC_REGISTER_ZOOKEEPER=KEY_PREFIX+"register.off";
 
 
     /**文件路径*/
+//    private final static String PROPRETIES_PATH = "/data/app/test/config/application.properties";
     private final static String PROPRETIES_PATH = "/application.properties";
 
 
@@ -44,8 +46,11 @@ public class ServerConfig {
     static {
         properties = new Properties();
         try {
-            InputStream is = Object.class.getResourceAsStream(PROPRETIES_PATH);
-            properties.load(is);
+            File file = new File(PROPRETIES_PATH);
+            InputStream is = new FileInputStream(file);
+            BufferedReader ipss = new BufferedReader(new InputStreamReader(is));
+
+            properties.load(ipss);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -85,6 +90,12 @@ public class ServerConfig {
         if (value == null)
             throw new RuntimeException(key + " property value is null");
         return value;
+    }
+    public static boolean getBooleanNotnull(String key) {
+        String value = properties.getProperty(key);
+        if (value == null)
+            throw new RuntimeException(key + " property value is null");
+        return Boolean.valueOf(value);
     }
 
     public static boolean containsKey(String key) {

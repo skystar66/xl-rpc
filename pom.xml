@@ -11,8 +11,8 @@
     <modules>
         <module>test-qsrpc</module>
         <module>XLRPC</module>
-        <module>QSRPC</module>
-        <module>QSRPC-starter</module>
+<!--        <module>QSRPC</module>-->
+<!--        <module>QSRPC-starter</module>-->
         <module>zookeeper</module>
         <module>xlrpc-starter</module>
     </modules>

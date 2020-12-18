@@ -31,7 +31,7 @@ public class NodeBuilder {
         if (node_action != null) {
             nodeInfo.setActions(node_action.split(","));
         }
-        nodeInfo.setIp(AddressUtils.getInnetIp());
+        nodeInfo.setIp(node_ip);
         nodeInfo.setPort(port);
         if (weight != null) {
             nodeInfo.setWeight(Byte.parseByte(weight));

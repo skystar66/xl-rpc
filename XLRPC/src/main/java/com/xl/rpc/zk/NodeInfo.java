@@ -3,6 +3,8 @@ package com.xl.rpc.zk;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.xl.rpc.message.Message;
 
+import java.util.Arrays;
+
 /**
  * @author song
  * @Email vipqinsong@gmail.com
@@ -204,5 +206,28 @@ public class NodeInfo {
             return this.id().equals(o1.id());
         }
         return false;
+    }
+
+
+    @Override
+    public String toString() {
+        return "NodeInfo{" +
+                "zkIps='" + zkIps + '\'' +
+                ", zkRpcPath='" + zkRpcPath + '\'' +
+                ", actions=" + Arrays.toString(actions) +
+                ", ip='" + ip + '\'' +
+                ", port=" + port +
+                ", rpcPoolSize=" + rpcPoolSize +
+                ", rpcServerIndex=" + rpcServerIndex +
+                ", retrySize=" + retrySize +
+                ", zip='" + zip + '\'' +
+                ", ver=" + ver +
+                ", queue=" + queue +
+                ", coreThread=" + coreThread +
+                ", weight=" + weight +
+                ", ssl=" + ssl +
+                ", time=" + time +
+                ", id='" + id + '\'' +
+                '}';
     }
 }

@@ -28,7 +28,8 @@ public class ReciveDataHandler extends SimpleChannelInboundHandler<Message> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Message cmd) throws Exception {
-        log.info("NettyType:{} cmd->{}",NettyContext.currentType(), cmd.toString());
+        //todo 先注释掉
+        //        log.info("NettyType:{} cmd->{}",NettyContext.currentType(), cmd.toString());
         //心态数据包直接响应
         if (cmd.getType() ==
                 (byte) MsgType.HEAT_CMD.getType()) {
