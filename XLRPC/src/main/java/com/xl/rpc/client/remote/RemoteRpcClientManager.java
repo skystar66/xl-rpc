@@ -103,8 +103,13 @@ public class RemoteRpcClientManager {
     }
 
 
-    // 包装异步回调,异步释放pool链接,统计
+    /**
+     * 包装异步回调,统计
+     */
     public static class AsyncCallback implements Callback<Message> {
+        /**
+         * 客户端结果回调类
+         */
         private Callback<byte[]> resultCallBack;
         private String ipport;
 
@@ -119,8 +124,6 @@ public class RemoteRpcClientManager {
         public void handleResult(Message result) {
             resultCallBack.handleResult(result.getContent());
             StatisticsManager.getInstance().success(ipport, result);//统计
-
-
         }
 
         @Override

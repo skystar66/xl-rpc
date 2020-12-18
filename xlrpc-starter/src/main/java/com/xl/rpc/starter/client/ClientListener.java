@@ -51,7 +51,7 @@ public class ClientListener implements ApplicationListener<ContextRefreshedEvent
 
     private ISerialize iSerialize;
 
-    //扫描容器所有@QSRpcReference的变量,new一个代理赋值
+    //扫描容器所有@XLRpcReference的变量,new一个代理赋值
     @Override//所有bean初始化完成前会调用
     public Object postProcessBeforeInitialization(final Object row, final String beanName) throws BeansException {
         if (iSerialize == null) iSerialize = new Protostuff();
@@ -77,7 +77,7 @@ public class ClientListener implements ApplicationListener<ContextRefreshedEvent
                 f.setAccessible(true);
                 try {
                     f.set(bean, porxy);
-                    LOGGER.info("Create QSRpcPorxy: " + c.getName() + "--->" + bean);
+                    LOGGER.info("Create XLRpcPorxy: " + c.getName() + "--->" + bean);
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }

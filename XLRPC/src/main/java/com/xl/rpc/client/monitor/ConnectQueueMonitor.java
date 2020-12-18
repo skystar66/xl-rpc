@@ -14,7 +14,12 @@ import java.util.concurrent.Executors;
 
 
 /**
- * rpc 连接监控
+ * 连接状态监控
+ *
+ * @author xl
+ * @desc: 当出现掉线，网络抖动等情况，
+ * 会触发重连，重连失败时(如果docker 容器部署时，会有一种服务被重复拉取的情况，
+ * 导致监听端口存在，服务不能用的情况)，会加入到该队列，由队列监控
  */
 @Slf4j
 public class ConnectQueueMonitor {
@@ -35,9 +40,7 @@ public class ConnectQueueMonitor {
     }
 
     public void start() {
-
         msgSenderExecutor = Executors.newFixedThreadPool(RPCConstants.retryQueueCount);
-
         for (int i = 0; i < RPCConstants.retryQueueCount; i++) {
             msgSenderExecutor.execute(new ConnectConsumerWorker(i));
         }
@@ -57,16 +60,18 @@ public class ConnectQueueMonitor {
         public void run() {
             while (true) {
                 try {
-                    if (null != retryConnectQueue) {
+                    if (null != retryConnectQueue &&
+                            retryConnectQueue.size() > 0) {
                         NodeInfo msg = retryConnectQueue.pop(timeout);
                         RpcClientManager.getInstance().connect(msg, msg.getRpcServerIndex());
                     }
-                } catch (Exception ignore) {
-                    log.warn("fromRPCMsgQueue.pop", ignore);
                     try {
-                        Thread.sleep(5);
+                        /**500ms执行一次*/
+                        Thread.sleep(500);
                     } catch (InterruptedException e) {
                     }
+                } catch (Exception ignore) {
+                    log.error("retryConnectQueue.pop", ignore);
                 }
             }
         }

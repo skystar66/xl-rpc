@@ -11,8 +11,7 @@ import org.springframework.cglib.proxy.MethodProxy;
 import java.lang.reflect.Method;
 
 /**
- * Created by QSong
- * Contact github.com/tohodog
+ * Created by xl
  * Date 2020/11/13
  * 创建接口代理,实现远程调用
  */

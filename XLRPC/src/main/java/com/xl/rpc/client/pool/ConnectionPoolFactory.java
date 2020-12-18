@@ -9,6 +9,11 @@ import com.xl.rpc.zk.NodeInfo;
 import lombok.extern.slf4j.Slf4j;
 
 
+/**
+ * @author xl
+ * @date: 2020-12-18
+ * @desc: 连接池调度管理工厂
+ */
 @Slf4j
 public class ConnectionPoolFactory {
     private static class InstanceHolder {

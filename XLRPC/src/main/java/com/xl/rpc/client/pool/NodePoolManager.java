@@ -7,7 +7,7 @@ import com.xl.rpc.client.connect.ConnectionCache;
 import com.xl.rpc.client.loadbalance.weight.ActionNodeWeight;
 import com.xl.rpc.cluster.ClusterCenter;
 import com.xl.rpc.config.ServerConfig;
-import com.xl.rpc.register.NodeBuilder;
+import com.xl.rpc.server.node.NodeBuilder;
 import com.xl.rpc.zk.NodeInfo;
 import com.xl.rpc.zookeeper.ZkHelp;
 import org.slf4j.Logger;

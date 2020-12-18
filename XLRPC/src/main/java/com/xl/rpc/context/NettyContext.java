@@ -4,7 +4,7 @@ package com.xl.rpc.context;
 import com.xl.rpc.enums.NettyType;
 
 /**
- * Description:
+ * Description: 用于标识 服务类型
  * Date: 2020/12/21
  *
  * @author xulia

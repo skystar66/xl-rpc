@@ -7,10 +7,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by QSong
- * Contact github.com/tohodog
- * Date 2020/11/25
- * 服务统计
+ * @auth xl
+ * @date 2020/12c/25
+ * 服务统计 调用量等信息
  */
 public class StatisticsManager {
 

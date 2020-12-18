@@ -11,6 +11,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * @author xl
+ * @date: 2020-12-18
+ * @desc: 负责管理各个节点对应的channel集合, 方便对节点尽心中心化管理，统一上线/下线
+ */
 @Slf4j
 public class NodePoolCache {
 
@@ -32,7 +37,7 @@ public class NodePoolCache {
     /**
      * 添加服务
      */
-    public static void addActionRpcSrv(String node, String key,RpcClient client) {
+    public static void addActionRpcSrv(String node, String key, RpcClient client) {
 
         synchronized (node.intern()) {
             CopyOnWriteArrayList<String> actionRpcList = getAllNodeRpcSrvListByNode(node);
@@ -41,14 +46,13 @@ public class NodePoolCache {
 
             }
             actionRpcList.add(key);
-            ConnectionCache.putIfAbsent(key,client);
-            nodePoolMap.putIfAbsent(node,actionRpcList);
+            ConnectionCache.putIfAbsent(key, client);
+            nodePoolMap.putIfAbsent(node, actionRpcList);
             show();
         }
 
 
     }
-
 
 
     /**
@@ -63,14 +67,13 @@ public class NodePoolCache {
     }
 
 
-
     /**
      * 移除服务channel
      */
     public static void removeActionRpcSrv(String node, String channelKey) {
         synchronized (node.intern()) {
             List<String> actionRpcList = getAllNodeRpcSrvListByNode(node);
-            if (CollectionUtils.isNotEmpty(actionRpcList) && actionRpcList.size()==1) {
+            if (CollectionUtils.isNotEmpty(actionRpcList) && actionRpcList.size() == 1) {
                 /**当该节点所有的channel 都挂掉之后，移除节点*/
                 actionRpcList.remove(channelKey);
                 nodePoolMap.remove(node);
@@ -105,7 +108,7 @@ public class NodePoolCache {
      * 展示连接数量
      */
     public static void show() {
-        log.info("####### 当前节点数量: {},  当前节点连接池信息：{}", nodePoolMap.size(),nodePoolMap);
+        log.info("####### 当前节点数量: {},  当前节点连接池信息：{}", nodePoolMap.size(), nodePoolMap);
 
 
     }

@@ -1,7 +1,5 @@
 package com.xl.rpc.protocol;
 
-import com.xl.rpc.context.NettyContext;
-import com.xl.rpc.enums.MsgType;
 import com.xl.rpc.message.Message;
 import com.xl.rpc.zip.IZip;
 import com.xl.rpc.zip.Zip;
@@ -19,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
  * <p>
  * 长度(4)包id(4)版本号(1)压缩类型(1)消息类型(1)内容(n)包尾(2)
  *
- * 发送
+ * 发送 编码
  */
 @Slf4j
 public class MessageEncoder extends MessageToByteEncoder<Message> {
@@ -44,7 +42,6 @@ public class MessageEncoder extends MessageToByteEncoder<Message> {
             //判断是否需要压缩
             IZip iZip = Zip.get(in.getZip());
             if (iZip != null) content = iZip.compress(content);
-
             out.writeInt(content.length + 9);
         }else {
             out.writeInt(9);

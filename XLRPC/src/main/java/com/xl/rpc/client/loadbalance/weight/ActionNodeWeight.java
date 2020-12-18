@@ -12,7 +12,7 @@ import java.util.Random;
 /**
  * 负载均衡
  *
- * @desc 服务权重计算类
+ * @desc 服务权重算法类
  */
 public class ActionNodeWeight {
 

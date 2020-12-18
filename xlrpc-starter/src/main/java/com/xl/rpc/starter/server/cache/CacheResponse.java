@@ -1,6 +1,7 @@
 package com.xl.rpc.starter.server.cache;
 
 import com.xl.rpc.starter.common.exc.NotFoundException;
+import com.xl.rpc.starter.common.exc.QpsLimitException;
 import com.xl.rpc.starter.common.exc.UnavailableException;
 import com.xl.rpc.starter.common.serialize.ISerialize;
 import com.xl.rpc.starter.dto.Response;
@@ -35,6 +36,13 @@ public class CacheResponse {
 
         Response empty = new Response();
         map.put("empty", iSerialize.serialize(empty));
+
+
+        Response qpsExc = new Response();
+        qpsExc.setException(new QpsLimitException());
+        map.put("qps", iSerialize.serialize(qpsExc));
+
+
     }
 
     public byte[] nofound() {
@@ -43,6 +51,11 @@ public class CacheResponse {
 
     public byte[] unavailable() {
         return map.get("unavailable");
+    }
+
+
+    public byte[] qpsLimit() {
+        return map.get("qps");
     }
 
     public byte[] empty() {
