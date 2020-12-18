@@ -16,7 +16,7 @@
         <module>qrpc-client</module>
         <module>api-sdk</module>
         <module>current-server</module>
-        <module>client</module>
+        <module>current-client</module>
     </modules>
 
 

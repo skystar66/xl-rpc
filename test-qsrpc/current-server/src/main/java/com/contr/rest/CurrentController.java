@@ -76,7 +76,34 @@ public class CurrentController {
         }
         List<String> nodeDatas = ZkHelp.getInstance().getChildren(ServerConfig.getString(ServerConfig.KEY_RPC_ZK_PATH));
 
-        return nodeDatas.toString();
+        return ZkHelp.getInstance().getValue("/xlrpc/"+nodeDatas.get(0));
+
+    }
+
+
+    @RequestMapping(value = "/server2",method = RequestMethod.GET)
+    public String server2() {
+
+        NodeInfo info = NodeBuilder.buildNode();
+        info.setActions(actions);
+
+        /**开启服务端*/
+        new Thread(new ServerStarter(info, new MessageListener() {
+            @Override
+            public byte[] onMessage(byte[] message) {
+                return message;
+            }
+        })).start();
+
+        Log.i("server start ok!");
+        try {
+            Thread.sleep(2000);
+
+        }catch (Exception ex) {
+
+        }
+
+        return "success";
 
     }
 

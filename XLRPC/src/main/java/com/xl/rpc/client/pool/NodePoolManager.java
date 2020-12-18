@@ -7,6 +7,7 @@ import com.xl.rpc.client.connect.ConnectionCache;
 import com.xl.rpc.client.loadbalance.weight.ActionNodeWeight;
 import com.xl.rpc.cluster.ClusterCenter;
 import com.xl.rpc.config.ServerConfig;
+import com.xl.rpc.register.NodeBuilder;
 import com.xl.rpc.zk.NodeInfo;
 import com.xl.rpc.zookeeper.ZkHelp;
 import org.slf4j.Logger;
@@ -65,6 +66,59 @@ public class NodePoolManager {
         /**初始化连接池及权重值变化*/
         initPoolAndWeight(nodeInfos);
     }
+
+
+    /**
+     * 初始化连接池 非使用zk方式
+     */
+    public void initNodePool(String action) {
+
+        List<NodeInfo> nodeInfos = new ArrayList<>();
+
+            try {
+                /**获取当前节点数据*/
+                NodeInfo nodeInfo = NodeBuilder.buildNode();
+                String[] actions= new String[]{action};
+                nodeInfo.setActions(actions);
+                nodeInfos.add(nodeInfo);
+            } catch (Exception e) {
+                logger.error("onNodeDataChange.parseObject", e);
+            }
+
+        /**初始化连接池及权重值变化*/
+        initPoolAndWeight(nodeInfos);
+    }
+
+
+    /**
+     * 初始化连接并赋予权重值 非使用zookeeper方式
+     */
+    public void initPoolAndWeightNoZK(List<NodeInfo> nodeDatas) {
+        for (NodeInfo nodeInfo : nodeDatas) {
+            /**step1: 建立连接*/
+            ConnectionPoolFactory.getInstance().zkSyncRpcServer(nodeInfo);
+            /**step2: 把节点按action分组,也就是同样服务功能的服务器放一起*/
+            String[] actions = nodeInfo.getActions();
+            for (String action : actions) {
+                ActionNodeWeight actionNodeContext = ActionConnectionCache.getActionNodeWeightByAction(action);
+                if (actionNodeContext == null) {
+                    actionNodeContext = new ActionNodeWeight();
+                    ActionNodeWeight old = ActionConnectionCache.addActionRpcSrv(action, actionNodeContext);
+                    if (old != null) {
+                        actionNodeContext = old;
+                    }
+                }
+                /**添加节点信息 加入到action weight中*/
+                actionNodeContext.addNode(nodeInfo);
+            }
+        }
+        /**step3: 初始化权重数据*/
+        for (Map.Entry<String, ActionNodeWeight> e : ActionConnectionCache.actionRpcMap.entrySet()) {
+            e.getValue().initWeight();
+        }
+
+    }
+
 
     /**
      * 节点变更通知

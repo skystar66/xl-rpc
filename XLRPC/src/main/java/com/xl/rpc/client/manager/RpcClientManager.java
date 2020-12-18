@@ -56,15 +56,15 @@ public class RpcClientManager {
             i++;
             if (i > rpcRetryTimes) {
 
-                log.info("##########连接失败，key:{}  到达重试次数上线 retryCount:{}  添加服务监控队列中...", key, i, rpcRetryTimes);
+                log.info("###### 连接失败，key:{}  到达重试次数上线 retryCount:{}  添加服务监控队列中...", key, i, rpcRetryTimes);
                 /**添加监控队列*/
                 MQProvider.getRetryConnectQueue().push(nodeInfo, Duration.ofMillis(1000));
                 break;
             }
-            log.info("##########开始对 {} 进行第 {}/{} 次连接...", key, i, rpcRetryTimes);
+            log.info("###### 开始对 {} 进行第 {}/{} 次连接...", key, i, rpcRetryTimes);
             try {
                 RpcClient client0 = ConnectionCache.get(key);
-                log.info("开始重新连接IM...    key={},    imServerIp={},	 localIp={},    client0={},    clientMap.get(key))={},   clientMap.size()={}", key, rpcServer, localIp, client0, ConnectionCache.get(key), ConnectionCache.rpcPoolSize());
+                log.info("###### 开始重新连接IM...    key={},    imServerIp={},	 localIp={},    client0={},    clientMap.get(key))={},   clientMap.size()={}", key, rpcServer, localIp, client0, ConnectionCache.get(key), ConnectionCache.rpcPoolSize());
                 if (client0 == null) {
                     synchronized (key.intern()) {
                         RpcClient client = new RpcClient(nodeInfo, index,key);   //服务端IP， 端口， 连接池索引

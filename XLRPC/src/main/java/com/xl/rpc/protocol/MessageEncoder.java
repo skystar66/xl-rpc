@@ -30,8 +30,14 @@ public class MessageEncoder extends MessageToByteEncoder<Message> {
     @Override
     public void encode(ChannelHandlerContext ctx, Message in, ByteBuf out) throws Exception {
 
-        log.info("NettyType : {} send->{}", NettyContext.currentType(),
-                in.toString());
+        long time = System.currentTimeMillis();
+
+        //1000分之一的打印机会
+        if (time % 1000 == 0) {
+//            log.error("NettyType : {} send->{}", NettyContext.currentType(),
+//                in.toString());
+        }
+
 
         byte[] content = in.getContent();
         if (content != null) {
