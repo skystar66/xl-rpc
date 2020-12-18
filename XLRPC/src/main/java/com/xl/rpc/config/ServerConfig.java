@@ -38,8 +38,8 @@ public class ServerConfig {
 
 
     /**文件路径*/
-//    private final static String PROPRETIES_PATH = "/data/app/test/config/application.properties";
-    private final static String PROPRETIES_PATH = "/application.properties";
+    private final static String PROPRETIES_PATH = "/data/app/test/config/application.properties";
+//    private final static String PROPRETIES_PATH = "/application.properties";
 
 
 

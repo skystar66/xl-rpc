@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**
- * Description:
+ * Description:处理收到消息接收打印
  * Company: CodingApi
  * Date: 2018/12/10
  *
@@ -23,7 +23,6 @@ import org.springframework.util.StringUtils;
 @Slf4j
 @Component
 public class ReciveDataHandler extends SimpleChannelInboundHandler<Message> {
-
 
 
     @Override
@@ -40,7 +39,6 @@ public class ReciveDataHandler extends SimpleChannelInboundHandler<Message> {
             }
             return;
         }
-
         // 通知执行下一个InboundHandler
         ctx.fireChannelRead(cmd);
     }

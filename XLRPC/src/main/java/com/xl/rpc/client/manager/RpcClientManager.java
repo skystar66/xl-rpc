@@ -23,20 +23,14 @@ public class RpcClientManager {
 
     private static Logger log = LoggerFactory.getLogger(RpcClientManager.class);
 
-
     public RpcClientManager() {
-
-
     }
-
     private static class InstanceHolder {
         public static final RpcClientManager instance = new RpcClientManager();
     }
-
     public static RpcClientManager getInstance() {
         return InstanceHolder.instance;
     }
-
 
 
     /**
@@ -90,10 +84,6 @@ public class RpcClientManager {
             } catch (InterruptedException e) {
                 //nothing to do
             }
-
         }
     }
-
-
-
 }

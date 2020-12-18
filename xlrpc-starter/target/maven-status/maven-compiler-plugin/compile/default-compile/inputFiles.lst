@@ -1,4 +1,4 @@
-/Users/joyme/Documents/xlrpc/xlrpc-starter/src/main/java/com/xl/rpc/starter/common/common.java
+/Users/joyme/Documents/xlrpc/xlrpc-starter/src/main/java/com/xl/rpc/starter/common/exc/QpsLimitException.java
 /Users/joyme/Documents/xlrpc/xlrpc-starter/src/main/java/com/xl/rpc/starter/common/exc/UnavailableException.java
 /Users/joyme/Documents/xlrpc/xlrpc-starter/src/main/java/com/xl/rpc/starter/dto/Request.java
 /Users/joyme/Documents/xlrpc/xlrpc-starter/src/main/java/com/xl/rpc/starter/server/listener/ServiceListener.java

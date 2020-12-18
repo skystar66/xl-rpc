@@ -1,8 +1,8 @@
 /Users/joyme/Documents/xlrpc/XLRPC/src/main/java/com/xl/rpc/reciver/ReciveDataHandler.java
 /Users/joyme/Documents/xlrpc/XLRPC/src/main/java/com/xl/rpc/client/remote/RemoteRpcClientManager.java
-/Users/joyme/Documents/xlrpc/XLRPC/src/main/java/com/xl/rpc/client/loadbalance/balance.java
 /Users/joyme/Documents/xlrpc/XLRPC/src/main/java/com/xl/rpc/utils/AddressUtils.java
 /Users/joyme/Documents/xlrpc/XLRPC/src/main/java/com/xl/rpc/App.java
+/Users/joyme/Documents/xlrpc/XLRPC/src/main/java/com/xl/rpc/server/node/NodeBuilder.java
 /Users/joyme/Documents/xlrpc/XLRPC/src/main/java/com/xl/rpc/context/NettyContext.java
 /Users/joyme/Documents/xlrpc/XLRPC/src/main/java/com/xl/rpc/zk/NodeInfo.java
 /Users/joyme/Documents/xlrpc/XLRPC/src/main/java/com/xl/rpc/client/loadbalance/weight/ActionNodeWeight.java
@@ -45,7 +45,6 @@
 /Users/joyme/Documents/xlrpc/XLRPC/src/main/java/com/xl/rpc/helper/ZkConfigHelper.java
 /Users/joyme/Documents/xlrpc/XLRPC/src/main/java/com/xl/rpc/zip/Zip.java
 /Users/joyme/Documents/xlrpc/XLRPC/src/main/java/com/xl/rpc/zookeeper/bean/Env.java
-/Users/joyme/Documents/xlrpc/XLRPC/src/main/java/com/xl/rpc/register/NodeBuilder.java
 /Users/joyme/Documents/xlrpc/XLRPC/src/main/java/com/xl/rpc/callback/CallbackPool.java
 /Users/joyme/Documents/xlrpc/XLRPC/src/main/java/com/xl/rpc/client/starter/ClientStarter.java
 /Users/joyme/Documents/xlrpc/XLRPC/src/main/java/com/xl/rpc/utils/DefaultStringUtils.java

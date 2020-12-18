@@ -1,12 +1,12 @@
 com/xl/rpc/starter/server/starter/RpcServiceStarter$1.class
 com/xl/rpc/starter/server/cache/CacheResponse.class
 com/xl/rpc/starter/server/listener/ServiceListener.class
+com/xl/rpc/starter/common/exc/QpsLimitException.class
 com/xl/rpc/starter/enable/EnableQSRpc.class
 com/xl/rpc/starter/client/XLRpcPorxy.class
 com/xl/rpc/starter/server/starter/RpcServiceStarter.class
 com/xl/rpc/starter/common/exc/NotFoundException.class
 com/xl/rpc/starter/client/XLRpcReference.class
-com/xl/rpc/starter/common/common.class
 com/xl/rpc/starter/common/serialize/ISerialize.class
 com/xl/rpc/starter/common/utils/AopTargetUtils.class
 com/xl/rpc/starter/server/XLRpcService.class

@@ -11,6 +11,11 @@ import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author xl
+ * @date: 2020-12-18
+ * @desc: 心跳handler
+ */
 @ChannelHandler.Sharable
 @Slf4j
 public class KeepaliveHandler extends ChannelInboundHandlerAdapter {
@@ -24,7 +29,7 @@ public class KeepaliveHandler extends ChannelInboundHandlerAdapter {
     public KeepaliveHandler() {
         heartCmd = new Message();
         heartCmd.setId(SnowflakeIdWorker.getInstance().nextId().intValue());
-        heartCmd.setType((byte)MsgType.HEAT_CMD.getType());
+        heartCmd.setType((byte) MsgType.HEAT_CMD.getType());
     }
 
     @Override
@@ -32,11 +37,13 @@ public class KeepaliveHandler extends ChannelInboundHandlerAdapter {
         super.channelActive(ctx);
 
     }
+
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
 
     }
+
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         //心跳配置

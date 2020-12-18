@@ -20,14 +20,14 @@ import java.util.concurrent.*;
 @Slf4j
 public class CurrentController {
 
-    private static final int DEFAULT_THREAD_POOL_SIZE = 8;//Runtime.getRuntime().availableProcessors() * 2;
+    private static final int DEFAULT_THREAD_POOL_SIZE = Runtime.getRuntime().availableProcessors() * 2;
 
     private static final ExecutorService EXECUTOR_SERVICE = new ThreadPoolExecutor(DEFAULT_THREAD_POOL_SIZE,
             DEFAULT_THREAD_POOL_SIZE * 2, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(1024));
 
     private final static int PORT = 10086;
-        private final static int count = 100000;//
-//    private final static int count = 1;//
+    private final static int count = 125000;// 8 * 125000=100万请求
+    //    private final static int count = 1;//
     private final static int thread = DEFAULT_THREAD_POOL_SIZE;//x个请求线程
     private final static long totalReqCount = count * thread;//总共请求
     private final static String zip = "";//gzip snappy
@@ -45,10 +45,7 @@ public class CurrentController {
     }
 
 
-
-
-
-    @RequestMapping(value = "/init",method = RequestMethod.GET)
+    @RequestMapping(value = "/init", method = RequestMethod.GET)
     public String init() {
         /**初始化客户端连接池*/
         NodePoolManager.getInstance().initNodePool("com.qrpc.api.ApiServerapiServer");
@@ -56,26 +53,40 @@ public class CurrentController {
 
     }
 
-
-
-
-    @RequestMapping(value = "/client",method = RequestMethod.GET)
-    public String client() {
-
+    /**
+     * 异步压测
+     * @desc:
+     *       1,160万并发 压测结果：4core：time:13403ms ,qps:119376个 ,流量:14922KB/s ,平均请求延时:8194ms
+     *       2,100万并发 压测结果：4-core-> time:7843ms ,qps:127502个 ,流量:15937KB/s ,平均请求延时:3922ms
+     */
+    @RequestMapping(value = "/clientAsync", method = RequestMethod.GET)
+    public String clientAsync() {
         for (int i = 0; i < thread; i++) {
+            //160万并发：4-core-> time:13403ms ,qps:119376个 ,流量:14922KB/s ,平均请求延时:8194ms
+            //100万并发  4-core-> time:7843ms ,qps:127502个 ,流量:15937KB/s ,平均请求延时:3922ms
+            EXECUTOR_SERVICE.submit(asyncPOOL);
+        }
+        temp = System.currentTimeMillis();
+        return "success";
+    }
 
-            //异步线程池4-core-> time:6364ms ,qps:125707个 ,流量:15713KB/s ,平均请求延时:3427ms
-//            EXECUTOR_SERVICE.submit(asyncPOOL);
-
-            //同步线程池,本无业务逻辑测试qps只有异步的30% ,猜测请求线程频繁休眠唤醒耗费性能
+    /**
+     * 同步压测
+     * @desc:
+     *       1，160万并发 压测结果：4-core-> use time:116627ms ,qps:13718个 ,流量:1714KB/s ,平均请求延时:0ms
+     *       2，100万并发 压测结果：4-core-> use time:75253ms ,qps:13288个 ,流量:1661KB/s ,平均请求延时:0ms
+     */
+    @RequestMapping(value = "/clientSync", method = RequestMethod.GET)
+    public String client() {
+        for (int i = 0; i < thread; i++) {
+            //160万并发：4-core-> use time:116627ms ,qps:13718个 ,流量:1714KB/s ,平均请求延时:0ms
+            //100万并发：4-core-> use time:75253ms ,qps:13288个 ,流量:1661KB/s ,平均请求延时:0ms
             EXECUTOR_SERVICE.submit(syncPOOL);
         }
         temp = System.currentTimeMillis();
-
         return "success";
 
     }
-
 
     //=================使用连接池=================
     static long temp = 0;
@@ -113,10 +124,10 @@ public class CurrentController {
                     e.printStackTrace();
                 }
                 log.error(Runtime.getRuntime().availableProcessors()
-                        + "-core-> time:" + use +"ms" +
-                        " ,qps:" + totalReqCount * 1000 / use+"个" +
+                        + "-core-> time:" + use + "ms" +
+                        " ,qps:" + totalReqCount * 1000 / use + "个" +
                         " ,流量:" + totalReqCount * (res.getContent().length + 12) / 1024 * 1000 / use + "KB/s" +
-                        " ,平均请求延时:" + (requse / totalReqCount)+"ms"
+                        " ,平均请求延时:" + (requse / totalReqCount) + "ms"
                 );
             }
         }
@@ -143,17 +154,15 @@ public class CurrentController {
                 if (res.getId() == totalReqCount) {
                     System.out.println("callback id-" + res.getId());
                     long use = System.currentTimeMillis() - temp;
-                    log.error("use time:" + use+"ms" +
-                            " ,qps:" + totalReqCount * 1000 / use+"ms" +
+                    log.error("use time:" + use + "ms" +
+                            " ,qps:" + totalReqCount * 1000 / use + "个" +
                             " ,流量:" + totalReqCount * (req.length + 12) * 1000 / use / 1024 + "KB/s" +
-                            " ,平均请求延时:" + (requse / totalReqCount)+"ms");
+                            " ,平均请求延时:" + (requse / totalReqCount) + "ms");
                 }
             }
         }
     };
 
-    // ==================建立一个 pool==================
-    static NodeInfo info = new NodeInfo();
 
     //同步
     static Message sendSyncTest(Message request) {
@@ -175,7 +184,7 @@ public class CurrentController {
 
     //异步
     static void sendAsyncTest(Message request, Callback<Message> callback) {
-        RpcClient tcpClient =NodePoolManager.getInstance().
+        RpcClient tcpClient = NodePoolManager.getInstance().
                 chooseRpcClient("com.qrpc.api.ApiServerapiServer");
         if (tcpClient != null) {
             request.setId(Message.createID());

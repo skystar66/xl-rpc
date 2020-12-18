@@ -9,8 +9,8 @@ import com.xl.rpc.exception.RPCException;
 import com.xl.rpc.listener.MessageListener;
 import com.xl.rpc.log.Log;
 import com.xl.rpc.message.Message;
-import com.xl.rpc.register.NodeBuilder;
 import com.xl.rpc.server.ServerStarter;
+import com.xl.rpc.server.node.NodeBuilder;
 import com.xl.rpc.zk.NodeInfo;
 import com.xl.rpc.zookeeper.ZkHelp;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,13 +44,6 @@ public class CurrentController {
     //加上包头包尾长度12字节,可加大测试带宽
     private static byte[] req = new byte[116];
 
-
-    static {
-//        info.setZip(zip);
-        /**初始化客户端连接池*/
-//        NodePoolManager.getInstance().initNodePool();
-
-    }
 
 
     @RequestMapping(value = "/server",method = RequestMethod.GET)

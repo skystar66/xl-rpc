@@ -3,8 +3,8 @@ package com.xl.rpc.starter.server.starter;
 import com.google.common.util.concurrent.RateLimiter;
 import com.xl.rpc.client.starter.ClientStarter;
 import com.xl.rpc.listener.MessageListener;
-import com.xl.rpc.register.NodeBuilder;
 import com.xl.rpc.server.ServerStarter;
+import com.xl.rpc.server.node.NodeBuilder;
 import com.xl.rpc.starter.common.serialize.ISerialize;
 import com.xl.rpc.starter.common.serialize.Protostuff;
 import com.xl.rpc.starter.common.utils.CGlib;
@@ -71,7 +71,7 @@ public class RpcServiceStarter {
                 /**针对整个服务做限制qps*/
                 if (rateLimiter != null) {
                     if (!rateLimiter.tryAcquire()) {
-                        return cacheResponse.unavailable();
+                        return cacheResponse.qpsLimit();
                     }
                 }
                 try {
@@ -106,7 +106,7 @@ public class RpcServiceStarter {
         /**限制 具体的 rpcServer 接口的 qps*/
         if (serviceContext.rateLimiter != null) {
             if (!serviceContext.rateLimiter.tryAcquire()) {
-                return cacheResponse.unavailable();
+                return cacheResponse.qpsLimit();
             }
         }
         /**获取服务动态代理对象*/

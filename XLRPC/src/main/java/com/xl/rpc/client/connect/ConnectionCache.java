@@ -6,11 +6,14 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+/**
+ * @author xl
+ * @date: 2020-12-18
+ * @desc: 负责管理各个channel的 rpcClient的,
+ * 其中channel key：ip_port_index
+ */
 @Slf4j
 public class ConnectionCache {
-
-    //节点连接池
-    public static ConcurrentMap<String, String> nodePoolMap = new ConcurrentHashMap<String, String>();
 
 
     //所有节点的连接池
@@ -43,6 +46,6 @@ public class ConnectionCache {
      * 展示连接数量
      */
     public static void show() {
-        log.info("####### 当前连接池数量: {}  连接池信息：{}", clientMap.size(),clientMap);
+        log.info("####### 当前连接池数量: {}  连接池信息：{}", clientMap.size(), clientMap);
     }
 }

@@ -2,9 +2,15 @@ package com.xl.rpc.client.connect;
 
 import com.xl.rpc.client.loadbalance.weight.ActionNodeWeight;
 import lombok.extern.slf4j.Slf4j;
+
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+/**
+ * @author xl
+ * @date: 2020-12-18
+ * @desc: 存储管理各个action 模块的节点权重上下文信息
+ */
 @Slf4j
 public class ActionConnectionCache {
 
@@ -38,8 +44,6 @@ public class ActionConnectionCache {
         /**移除action*/
         actionRpcMap.remove(action);
     }
-
-
 
 
 }

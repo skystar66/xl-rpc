@@ -28,7 +28,6 @@ com/xl/rpc/cluster/ClusterCenter$InstanceHolder.class
 com/xl/rpc/reciver/ReciveDataHandler.class
 com/xl/rpc/helper/ZkConfigHelper$2.class
 com/xl/rpc/client/starter/ClientStarter$InstanceHolder.class
-com/xl/rpc/client/loadbalance/balance.class
 com/xl/rpc/protocol/MessageDecoder.class
 com/xl/rpc/zookeeper/ZkHelp$1.class
 com/xl/rpc/enums/MsgType.class
@@ -54,10 +53,10 @@ com/xl/rpc/mq/MessageQueue.class
 com/xl/rpc/utils/BeanJsonUtil$1.class
 com/xl/rpc/config/CommonConfig.class
 com/xl/rpc/utils/BeanJsonUtil.class
-com/xl/rpc/register/NodeBuilder.class
 com/xl/rpc/server/TcpServer$1.class
 com/xl/rpc/config/ServerConfig.class
 com/xl/rpc/cluster/ClusterCenter$2.class
+com/xl/rpc/server/node/NodeBuilder.class
 com/xl/rpc/client/starter/ClientStarter.class
 com/xl/rpc/zip/Zip$1.class
 com/xl/rpc/log/Log.class
