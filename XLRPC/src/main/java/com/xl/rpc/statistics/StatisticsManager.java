@@ -5,6 +5,8 @@ import com.xl.rpc.message.Message;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @auth xl
@@ -26,7 +28,8 @@ public class StatisticsManager {
         return instance;
     }
 
-    private Map<String, StatisticsInfo> map = new HashMap<>();
+    private Map<String, StatisticsInfo> map = new ConcurrentHashMap<>();
+    private Map<String, AtomicLong> qpsMap = new ConcurrentHashMap<>();
 
 
     public void start(String ipport, Message message) {
@@ -42,6 +45,8 @@ public class StatisticsManager {
     }
 
     public static class StatisticsInfo {
+
+
 
     }
 }
