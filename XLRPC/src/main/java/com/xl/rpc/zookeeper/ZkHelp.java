@@ -28,7 +28,7 @@ public class ZkHelp {
 
 	private ZkHelp() {
 		//todo 先注释掉
-//		init();
+		init();
 	}
 
 	public static ZkHelp getInstance() {

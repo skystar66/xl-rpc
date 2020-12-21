@@ -37,20 +37,15 @@ public class ServerConfig {
     public static final String KEY_RPC_REGISTER_ZOOKEEPER=KEY_PREFIX+"register.off";
 
 
-    /**文件路径*/
-    private final static String PROPRETIES_PATH = "/data/app/test/config/application.properties";
-//    private final static String PROPRETIES_PATH = "/application.properties";
+    private final static String PROPRETIES_PATH = "/application.properties";
 
 
 
     static {
         properties = new Properties();
         try {
-            File file = new File(PROPRETIES_PATH);
-            InputStream is = new FileInputStream(file);
-            BufferedReader ipss = new BufferedReader(new InputStreamReader(is));
-
-            properties.load(ipss);
+            InputStream is = Object.class.getResourceAsStream(PROPRETIES_PATH);
+            properties.load(is);
         } catch (IOException e) {
             e.printStackTrace();
         }
