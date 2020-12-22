@@ -1,5 +1,6 @@
 package com.xl.rpc.starter.server.starter;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.util.concurrent.RateLimiter;
 import com.xl.rpc.client.starter.ClientStarter;
 import com.xl.rpc.listener.MessageListener;
@@ -14,6 +15,8 @@ import com.xl.rpc.starter.enable.EnableQSRpc;
 import com.xl.rpc.starter.server.cache.CacheResponse;
 import com.xl.rpc.starter.server.context.RpcServiceContext;
 import com.xl.rpc.zk.NodeInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.InvocationTargetException;
@@ -26,6 +29,7 @@ import java.util.Map;
  */
 public class RpcServiceStarter {
 
+    private static Logger logger = LoggerFactory.getLogger(RpcServiceStarter.class);
 
     // 内部静态类方式
     private static class InstanceHolder {
@@ -68,6 +72,8 @@ public class RpcServiceStarter {
         new Thread(new ServerStarter(nodeInfo,new MessageListener() {
             @Override
             public byte[] onMessage(byte[] message) {
+
+
                 /**针对整个服务做限制qps*/
                 if (rateLimiter != null) {
                     if (!rateLimiter.tryAcquire()) {
@@ -97,8 +103,15 @@ public class RpcServiceStarter {
      * 处理rpc消息
      */
     private byte[] onHandle(byte[] message) throws InvocationTargetException {
+        Long start = System.currentTimeMillis();
         Request request = iSerialize.deserialize(message, Request.class);
-        RpcServiceContext serviceContext = contextMap.get(request.getInterfaceName() + request.getVersion());
+
+        String serverName = request.getInterfaceName() + request.getVersion();
+        logger.info("Server Invoke Recive Client reqId: {} | ReqServerName: {} | ReqParams: {}"
+                ,request.getReqId(),serverName, JSONObject.toJSONString(request
+                ));
+
+        RpcServiceContext serviceContext = contextMap.get(serverName);
         if (serviceContext == null) {
             return cacheResponse.nofound();
         }
@@ -106,18 +119,29 @@ public class RpcServiceStarter {
         /**限制 具体的 rpcServer 接口的 qps*/
         if (serviceContext.rateLimiter != null) {
             if (!serviceContext.rateLimiter.tryAcquire()) {
+                logger.info("reqId: {} | ReqServerName: {} | QPS Limit Is Intercepted！QPSCount: {} " +
+                                "Invoke Recive Client ReqParams: {}"
+                        ,request.getReqId(),serverName,serviceContext.qps,
+                         JSONObject.toJSONString(request
+                        ));
                 return cacheResponse.qpsLimit();
             }
         }
+
         /**获取服务动态代理对象*/
         Object obj = CGlib.invoke(serviceContext.object, serviceContext.methodMap.get(
                 request.getMethodName()),
                 request.getParamters());
-        if (obj == null) {
-            return cacheResponse.empty();
-        }
+        logger.info("reqId: {} | Cost Time: {}ms ReqServerName: {} Invoke Rpc Server" +
+                        " Response:{} | ReqParams: {}"
+                ,request.getReqId(), System.currentTimeMillis()-start,
+                serverName,
+                obj,
+                JSONObject.toJSONString(request
+                ));
         Response response = new Response();
         response.setResult(obj);
+        response.setReqId(request.getReqId());
         return iSerialize.serialize(response);
     }
 

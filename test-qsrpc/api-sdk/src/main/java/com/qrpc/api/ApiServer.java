@@ -7,4 +7,6 @@ public interface ApiServer {
 
     String hello(String name);
 
+    String req(String req);
+
 }

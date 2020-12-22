@@ -13,6 +13,8 @@ public class Response implements Serializable {
 
     private Exception exception;
 
+    private Long reqId;
+
     private Object result;
 
     public Exception getException() {
@@ -29,5 +31,13 @@ public class Response implements Serializable {
 
     public void setResult(Object result) {
         this.result = result;
+    }
+
+    public Long getReqId() {
+        return reqId;
+    }
+
+    public void setReqId(Long reqId) {
+        this.reqId = reqId;
     }
 }

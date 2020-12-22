@@ -75,7 +75,10 @@ public class ServiceListener implements ApplicationListener<ContextRefreshedEven
                     rpcServiceContext.methodMap.put(m.toString(), m);
                 }
                 float qps = qsRpcService.qps();
-                if (qps > 0) rpcServiceContext.rateLimiter = RateLimiter.create(qps);
+                if (qps > 0) {
+                    rpcServiceContext.rateLimiter = RateLimiter.create(qps);
+                    rpcServiceContext.qps=qps;
+                }
                 contextMap.put(serviceName, rpcServiceContext);
             }
         }
@@ -91,7 +94,7 @@ public class ServiceListener implements ApplicationListener<ContextRefreshedEven
         RpcServiceStarter.getInstance().init(contextMap, enableQSRpc);
         /**启动服务端*/
         RpcServiceStarter.getInstance().start();
-        logger.info("QSRPC节点服务已启动^_^:" + contextMap.keySet());
+        logger.info("XLRPC节点服务已启动^_^:" + contextMap.keySet());
     }
 
 

@@ -16,4 +16,10 @@ public class ApiServerImpl implements ApiServer {
     public String hello(String name) {
         return name;
     }
+
+
+    @Override
+    public String req(String req) {
+        return req;
+    }
 }

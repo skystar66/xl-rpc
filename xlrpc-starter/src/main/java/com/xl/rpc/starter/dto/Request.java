@@ -13,6 +13,10 @@ import java.io.Serializable;
 public class Request implements Serializable {
 
 
+
+    /**请求唯一id*/
+    private Long reqId;
+
     /**
      * 接口名称
      */
@@ -64,5 +68,13 @@ public class Request implements Serializable {
 
     public void setParamters(Object[] paramters) {
         this.paramters = paramters;
+    }
+
+    public Long getReqId() {
+        return reqId;
+    }
+
+    public void setReqId(Long reqId) {
+        this.reqId = reqId;
     }
 }
