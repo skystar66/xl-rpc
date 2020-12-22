@@ -6,6 +6,17 @@ import com.alibaba.fastjson.JSONObject;
 import java.io.Serializable;
 import java.util.Arrays;
 
+/**
+ *
+ * 1.2 协议:
+ __ __ __ __ __ __ __ __ __ ____ __ __ __ __ __ __ ____ __ __ _____ __ __ ____ __ __ __ __ __ __ __ __
+ * |              |              |           |           |           |           |                         |
+ *         2              4            1           1           4           1             Uncertainty
+ * |__ __ __ __ __|__ __ __ __ __|__ __ __ __|__ __ __ __|__ __ __ __|__ __ __ __|_ __ __ __ __ __ __ __ __|
+ * |              |              |           |           |           |           |                         |
+ *        包尾        BodyLength       VER       Type           ID       ZIP           CONTENT
+ * |__ __ __ __ __|__ __ __ __ __|__ __ __ __|__ __ __ __|__ __ __ __|__ __ __ __|__ __ __ ____ __ __ __ __|
+ * */
 public class Message implements Serializable {
 
     public final static int VER = 0;// 协议版本目前只有0 ,递增

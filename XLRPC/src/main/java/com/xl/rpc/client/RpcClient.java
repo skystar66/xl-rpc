@@ -91,7 +91,8 @@ public class RpcClient {
                         ".sendAsync() timeout must >0 :" + timeout));
                 return;
             }
-            CallbackPool.put(request.getId(),callback);
+            /**放入回调池中，并设置超时时间，超过时间后，自动清理回调*/
+            CallbackPool.put(request.getId(),callback,timeout);
             channel.writeAndFlush(request);
         }else {
             callback.handleError(new RPCException(this.getClass().getName()

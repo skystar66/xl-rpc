@@ -13,12 +13,12 @@ public class QSRpcController {
 
 
     @XLRpcReference(value = "apiServer",version = "1.0")
-//@QSRpcReference(version = "2.0",timeout = 10000) 配置版本号及超时
      ApiServer rpcServer;
 
     @ResponseBody
     @RequestMapping(value = "/hello",method = RequestMethod.GET)
     public String hello() {
-        return rpcServer.hello("Welcome Use XL-RPC Framework !!!");
+        return rpcServer.hello("Welcome Use XL-RPC Framework !!!")+
+                rpcServer.req("+++req");
     }
 }

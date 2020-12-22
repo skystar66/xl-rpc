@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 public class RemoteRpcClientManager {
 
 
+    /**请求rpc超时时间，默认是60s*/
     public static final int RpcTimeout;
 
     static {
@@ -104,11 +105,11 @@ public class RemoteRpcClientManager {
 
 
     /**
-     * 包装异步回调,统计
+     * 包装异步回调,统计服务端调用信息，做中介者模式
      */
     public static class AsyncCallback implements Callback<Message> {
         /**
-         * 客户端结果回调类
+         * 客户端自己的结果回调类
          */
         private Callback<byte[]> resultCallBack;
         private String ipport;
@@ -116,21 +117,23 @@ public class RemoteRpcClientManager {
         public AsyncCallback(Callback<byte[]> resultCallBack, String ipport, Message message) {
             this.resultCallBack = resultCallBack;
             this.ipport = ipport;
-            StatisticsManager.getInstance().start(ipport, message);//统计
+            /**统计*/
+            StatisticsManager.getInstance().start(ipport, message);
 
         }
 
         @Override
         public void handleResult(Message result) {
             resultCallBack.handleResult(result.getContent());
-            StatisticsManager.getInstance().success(ipport, result);//统计
+            /**统计*/
+            StatisticsManager.getInstance().success(ipport, result);
         }
 
         @Override
         public void handleError(Throwable error) {
             resultCallBack.handleError(error);
-            StatisticsManager.getInstance().fail(ipport, error);//统计
-
+            /**统计*/
+            StatisticsManager.getInstance().fail(ipport, error);
         }
     }
 }

@@ -24,6 +24,10 @@ public class RpcServiceContext {
      */
     public Map<String, Method> methodMap = new HashMap<>();
 
+    /**该服务的qps大小*/
+    public float qps;
+
+
     /**
      * 服务的限流qps
      */
