@@ -6,8 +6,7 @@ import com.xl.rpc.message.Message;
 import java.util.Arrays;
 
 /**
- * @author song
- * @Email vipqinsong@gmail.com
+ * @author xl
  * @date 2019年3月15日 下午1:38:25
  * <p>
  * 节点信息

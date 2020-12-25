@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author xl
- * @Email vipqinsong@gmail.com
  * @date 2018年11月22日 上午11:55:38
  * <p>
  * 适用短连接/追求效率+比较可靠的长连接 包头长度+特定包尾 一旦丢包必须关闭重连,因为后面数据会错乱
