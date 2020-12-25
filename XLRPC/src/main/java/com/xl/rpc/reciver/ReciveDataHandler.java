@@ -14,10 +14,9 @@ import org.springframework.util.StringUtils;
 
 /**
  * Description:处理收到消息接收打印
- * Company: CodingApi
  * Date: 2018/12/10
  *
- * @author ujued
+ * @author xl
  */
 @ChannelHandler.Sharable
 @Slf4j

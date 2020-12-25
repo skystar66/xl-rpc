@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author by QSong
+ * @author by xl
  * @date 2020/12/09
  * @desc 存储一个rpc接口服务的信息
  */

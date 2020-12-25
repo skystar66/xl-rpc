@@ -11,7 +11,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 /**
- * Created by QSong
+ * Created by xxl
  * Contact github.com/tohodog
  * Date 2020/11/10
  * todo 可优化成 zero copy
