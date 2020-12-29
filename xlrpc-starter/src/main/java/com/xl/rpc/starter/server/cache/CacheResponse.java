@@ -28,6 +28,7 @@ public class CacheResponse {
     private void init() {
         Response nofound = new Response();
         nofound.setException(new NotFoundException());
+        nofound.setResult("服务没有找到！！");
         map.put("nofound", iSerialize.serialize(nofound));
 
         Response unavailable = new Response();

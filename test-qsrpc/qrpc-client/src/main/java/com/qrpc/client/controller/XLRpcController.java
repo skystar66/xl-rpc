@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("xlrpc")
-public class QSRpcController {
+public class XLRpcController {
 
 
     @XLRpcReference(value = "apiServer",version = "1.0")
