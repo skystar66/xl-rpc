@@ -38,7 +38,7 @@ public class CurrentController {
     private final static String zip = "";//gzip snappy
     private final static int timeout = 60_000;
 
-    private static String[] actions=new String[]{"com.qrpc.api.ApiServerapiServer"};
+    private static String[] actions = new String[]{"com.qrpc.api.ApiServerapiServer"};
 
 
     //加上包头包尾长度12字节,可加大测试带宽
@@ -53,7 +53,10 @@ public class CurrentController {
     }
 
 
-    @RequestMapping(value = "/server",method = RequestMethod.GET)
+    /**
+     * 模拟开启一个服务端 注册zookeeper
+     */
+    @RequestMapping(value = "/server", method = RequestMethod.GET)
     public String hello() {
 
         NodeInfo info = NodeBuilder.buildNode();
@@ -71,17 +74,19 @@ public class CurrentController {
         try {
             Thread.sleep(2000);
 
-        }catch (Exception ex) {
+        } catch (Exception ex) {
 
         }
         List<String> nodeDatas = ZkHelp.getInstance().getChildren(ServerConfig.getString(ServerConfig.KEY_RPC_ZK_PATH));
 
-        return ZkHelp.getInstance().getValue("/xlrpc/"+nodeDatas.get(0));
+        return ZkHelp.getInstance().getValue("/xlrpc/" + nodeDatas.get(0));
 
     }
 
-
-    @RequestMapping(value = "/server2",method = RequestMethod.GET)
+    /**
+     * 模拟开启一个服务端 无需注册zookeeper，本地开启
+     */
+    @RequestMapping(value = "/server2", method = RequestMethod.GET)
     public String server2() {
 
         NodeInfo info = NodeBuilder.buildNode();
@@ -99,14 +104,13 @@ public class CurrentController {
         try {
             Thread.sleep(2000);
 
-        }catch (Exception ex) {
+        } catch (Exception ex) {
 
         }
 
         return "success";
 
     }
-
 
 
 }
