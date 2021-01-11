@@ -4,7 +4,6 @@ import java.io.IOException;
 
 /**
  * Created by xl
- * Contact github.com/tohodog
  * Date 2020/11/10
  */
 public interface IZip {

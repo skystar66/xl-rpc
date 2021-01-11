@@ -53,7 +53,8 @@ public class ClientStarter {
     private SslContext sslContext;
 
     private Channel channel;
-    private EventLoopGroup bossGroup;// TODO 考虑改成静态,所有连接公用同一个线程池
+    // TODO 考虑改成静态,所有连接公用同一个线程池
+    private static EventLoopGroup bossGroup =  new NioEventLoopGroup(1);
 
 
     public ClientStarter() {
@@ -71,7 +72,7 @@ public class ClientStarter {
             this.ver = nodeInfo.getVer();
         }
         try {
-            bossGroup = new NioEventLoopGroup(zip == 0 ? 1 : 1);//有压缩增加线程数...待定
+//            bossGroup = new NioEventLoopGroup(zip == 0 ? 1 : 1);//有压缩增加线程数...待定
             Bootstrap bootstrap = new Bootstrap();
             bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connTimeout);
             bootstrap.option(ChannelOption.SO_KEEPALIVE, soKeepalive);
