@@ -4,7 +4,7 @@ import com.google.common.util.concurrent.RateLimiter;
 import com.xl.rpc.starter.common.exc.DuplicateException;
 import com.xl.rpc.starter.common.utils.AopTargetUtils;
 import com.xl.rpc.starter.common.utils.BeanNameUtil;
-import com.xl.rpc.starter.enable.EnableQSRpc;
+import com.xl.rpc.starter.enable.EnableXLRpc;
 import com.xl.rpc.starter.server.XLRpcService;
 import com.xl.rpc.starter.server.context.RpcServiceContext;
 import com.xl.rpc.starter.server.starter.RpcServiceStarter;
@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -32,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 public class ServiceListener implements ApplicationListener<ContextRefreshedEvent> {
     private Map<String, RpcServiceContext> contextMap = new HashMap<>();
 
-    private EnableQSRpc enableQSRpc;
+    private EnableXLRpc enableXLRpc;
 
 
     private static Logger logger = LoggerFactory.getLogger(ServiceListener.class);
@@ -50,12 +49,12 @@ public class ServiceListener implements ApplicationListener<ContextRefreshedEven
 
     private void scanRpcService(ApplicationContext applicationContext) throws Exception {
 
-        Map<String, Object> startMap = applicationContext.getBeansWithAnnotation(EnableQSRpc.class);
+        Map<String, Object> startMap = applicationContext.getBeansWithAnnotation(EnableXLRpc.class);
         if (startMap == null) return;
 
-        enableQSRpc = startMap.values().iterator().next().getClass().getAnnotation(EnableQSRpc.class);
+        enableXLRpc = startMap.values().iterator().next().getClass().getAnnotation(EnableXLRpc.class);
         /**校验开关是否开启*/
-        if (!enableQSRpc.enabledServer()) return;
+        if (!enableXLRpc.enabledServer()) return;
         /**获取rpcservice 注解服务*/
         Map<String, Object> rpcServiceMap = applicationContext.getBeansWithAnnotation(XLRpcService.class);
         if (rpcServiceMap.isEmpty()) return;//没有提供rpc服务
@@ -69,8 +68,8 @@ public class ServiceListener implements ApplicationListener<ContextRefreshedEven
                 e.printStackTrace();
             }
 
-            XLRpcService qsRpcService = serviceBean.getClass().getAnnotation(XLRpcService.class);
-            if (qsRpcService == null) continue;
+            XLRpcService xlRpcService = serviceBean.getClass().getAnnotation(XLRpcService.class);
+            if (xlRpcService == null) continue;
 
             Class<?>[] interfaces = serviceBean.getClass().getInterfaces();
             if (interfaces == null || interfaces.length == 0)
@@ -80,8 +79,8 @@ public class ServiceListener implements ApplicationListener<ContextRefreshedEven
                 /**获取全路径包名*/
                 String interfaceServiceName = i.getName();
                 /**获取服务注册名*/
-                String serviceBeanName = qsRpcService.value();
-                String serviceVersion = qsRpcService.version();
+                String serviceBeanName = xlRpcService.value();
+                String serviceVersion = xlRpcService.version();
 //                if (serviceVersion.isEmpty()) serviceVersion = qsRpcService.version();
 //                if (!serviceVersion.isEmpty()) {
 //                    serviceName += serviceVersion;
@@ -96,7 +95,7 @@ public class ServiceListener implements ApplicationListener<ContextRefreshedEven
                 for (Method m : methods) {
                     rpcServiceContext.methodMap.put(m.toString(), m);
                 }
-                float qps = qsRpcService.qps();
+                float qps = xlRpcService.qps();
                 if (qps > 0) {
                     rpcServiceContext.rateLimiter = RateLimiter.create(qps);
                     rpcServiceContext.qps = qps;
@@ -119,7 +118,7 @@ public class ServiceListener implements ApplicationListener<ContextRefreshedEven
         }
 
         /**初始化服务信息*/
-        RpcServiceStarter.getInstance().init(contextMap, enableQSRpc);
+        RpcServiceStarter.getInstance().init(contextMap, enableXLRpc);
         /**启动服务端*/
         RpcServiceStarter.getInstance().start();
         logger.info("XLRPC节点服务已启动^_^:" + contextMap.keySet());

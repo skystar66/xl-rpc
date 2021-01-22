@@ -6,7 +6,7 @@ import com.xl.rpc.cluster.ClusterCenter;
 import com.xl.rpc.starter.common.serialize.ISerialize;
 import com.xl.rpc.starter.common.serialize.Protostuff;
 import com.xl.rpc.starter.common.utils.AopTargetUtils;
-import com.xl.rpc.starter.enable.EnableQSRpc;
+import com.xl.rpc.starter.enable.EnableXLRpc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -36,10 +36,10 @@ public class ClientListener implements ApplicationListener<ContextRefreshedEvent
 
 
     private void initClient(ApplicationContext ctx) {
-        Map<String, Object> startMap = ctx.getBeansWithAnnotation(EnableQSRpc.class);
+        Map<String, Object> startMap = ctx.getBeansWithAnnotation(EnableXLRpc.class);
         if (startMap.size() == 0) return;
-        EnableQSRpc enableQSRpc = startMap.values().iterator().next().getClass().getAnnotation(EnableQSRpc.class);
-        if (!enableQSRpc.enabledClient()) return;
+        EnableXLRpc enableXLRpc = startMap.values().iterator().next().getClass().getAnnotation(EnableXLRpc.class);
+        if (!enableXLRpc.enabledClient()) return;
         /**初始化连接池*/
         NodePoolManager.getInstance().initNodePool();
         /**监听节点变化*/
