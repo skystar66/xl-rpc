@@ -1,24 +1,20 @@
 package com.xl.rpc.starter.server.starter;
 
-import com.alibaba.fastjson.JSONObject;
 import com.google.common.util.concurrent.RateLimiter;
-import com.xl.rpc.client.starter.ClientStarter;
 import com.xl.rpc.listener.MessageListener;
 import com.xl.rpc.server.ServerStarter;
 import com.xl.rpc.server.node.NodeBuilder;
 import com.xl.rpc.starter.common.serialize.ISerialize;
 import com.xl.rpc.starter.common.serialize.Protostuff;
-import com.xl.rpc.starter.common.utils.BeanNameUtil;
 import com.xl.rpc.starter.common.utils.CGlib;
 import com.xl.rpc.starter.dto.Request;
 import com.xl.rpc.starter.dto.Response;
-import com.xl.rpc.starter.enable.EnableQSRpc;
+import com.xl.rpc.starter.enable.EnableXLRpc;
 import com.xl.rpc.starter.server.cache.CacheResponse;
 import com.xl.rpc.starter.server.context.RpcServiceContext;
 import com.xl.rpc.zk.NodeInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
@@ -52,13 +48,13 @@ public class RpcServiceStarter {
     /**
      * 初始化数据
      */
-    public void init(Map<String, RpcServiceContext> contextMap, EnableQSRpc enableQSRpc) {
+    public void init(Map<String, RpcServiceContext> contextMap, EnableXLRpc enableXLRpc) {
         this.contextMap = contextMap;
         if (iSerialize == null) iSerialize = new Protostuff();
         cacheResponse = new CacheResponse(iSerialize);
-        if (enableQSRpc.qps() > 0) {
+        if (enableXLRpc.qps() > 0) {
             /**针对整个服务做限流 每秒允许最大qps 为qps*/
-            rateLimiter = RateLimiter.create(enableQSRpc.qps(),1, TimeUnit.SECONDS);
+            rateLimiter = RateLimiter.create(enableXLRpc.qps(),1, TimeUnit.SECONDS);
         }
     }
 

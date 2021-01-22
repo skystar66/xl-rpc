@@ -18,7 +18,7 @@ import java.lang.annotation.*;
 @Import({ServiceListener.class
         , ClientListener.class
         , Protostuff.class})
-public @interface EnableQSRpc {
+public @interface EnableXLRpc {
 
 
     /**
