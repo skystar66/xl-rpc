@@ -13,6 +13,7 @@ public class RPCConstants {
     //缓存分隔符
     public static String SEQ = "__";
 
+    /**重试队列 线程数*/
     public static int retryQueueCount=3;
 
 

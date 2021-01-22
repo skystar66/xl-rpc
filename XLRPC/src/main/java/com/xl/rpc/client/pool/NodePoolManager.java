@@ -2,14 +2,15 @@ package com.xl.rpc.client.pool;
 
 import com.alibaba.fastjson.JSON;
 import com.xl.rpc.client.RpcClient;
-import com.xl.rpc.client.connect.ActionConnectionCache;
 import com.xl.rpc.client.connect.ConnectionCache;
-import com.xl.rpc.client.loadbalance.weight.ActionNodeWeight;
+import com.xl.rpc.client.loadbalance.weight.RpcLoadBalance;
 import com.xl.rpc.cluster.ClusterCenter;
 import com.xl.rpc.config.ServerConfig;
+import com.xl.rpc.exception.RPCException;
 import com.xl.rpc.server.node.NodeBuilder;
 import com.xl.rpc.zk.NodeInfo;
 import com.xl.rpc.zookeeper.ZkHelp;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,15 +51,16 @@ public class NodePoolManager {
         /**获取节点列表*/
         List<String> nodeDatas = zkHelp.getChildren(ServerConfig.getString(ServerConfig.KEY_RPC_ZK_PATH));
         List<NodeInfo> nodeInfos = new ArrayList<>();
-        for (String node : nodeDatas) {
+        for (String nodeIp : nodeDatas) {
             try {
                 /**获取当前节点数据*/
                 String nodeData = zkHelp.getValue(ServerConfig.getString(ServerConfig.KEY_RPC_ZK_PATH)+
-                        "/"+node);
+                        "/"+nodeIp);
 
                 NodeInfo nodeInfo = JSON.parseObject(nodeData, NodeInfo.class);
                 nodeInfos.add(nodeInfo);
-                ClusterCenter.getInstance().listenerServerRpcConfig(node);
+                /**监控当前服务节点的变化*/
+                ClusterCenter.getInstance().listenerServerRpcConfig(nodeIp);
             } catch (Exception e) {
                 logger.error("onNodeDataChange.parseObject", e);
             }
@@ -89,35 +91,22 @@ public class NodePoolManager {
         initPoolAndWeight(nodeInfos);
     }
 
-
-    /**
-     * 初始化连接并赋予权重值 非使用zookeeper方式
-     */
-    public void initPoolAndWeightNoZK(List<NodeInfo> nodeDatas) {
-        for (NodeInfo nodeInfo : nodeDatas) {
-            /**step1: 建立连接*/
-            ConnectionPoolFactory.getInstance().zkSyncRpcServer(nodeInfo);
-            /**step2: 把节点按action分组,也就是同样服务功能的服务器放一起*/
-            String[] actions = nodeInfo.getActions();
-            for (String action : actions) {
-                ActionNodeWeight actionNodeContext = ActionConnectionCache.getActionNodeWeightByAction(action);
-                if (actionNodeContext == null) {
-                    actionNodeContext = new ActionNodeWeight();
-                    ActionNodeWeight old = ActionConnectionCache.addActionRpcSrv(action, actionNodeContext);
-                    if (old != null) {
-                        actionNodeContext = old;
-                    }
-                }
-                /**添加节点信息 加入到action weight中*/
-                actionNodeContext.addNode(nodeInfo);
-            }
-        }
-        /**step3: 初始化权重数据*/
-        for (Map.Entry<String, ActionNodeWeight> e : ActionConnectionCache.actionRpcMap.entrySet()) {
-            e.getValue().initWeight();
-        }
-
-    }
+//
+//    /**
+//     * 初始化连接并赋予权重值 非使用zookeeper方式
+//     */
+//    public void initPoolAndWeightNoZK(List<NodeInfo> nodeDatas) {
+//        for (NodeInfo nodeInfo : nodeDatas) {
+//            /**step1: 建立连接*/
+//            ConnectionPoolFactory.getInstance().zkSyncRpcServer(nodeInfo);
+//            RpcLoadBalance.getInstance().addNode(nodeInfo);
+//        }
+//        /**step3: 初始化权重数据*/
+//        for (Map.Entry<String, RpcLoadBalance> e : ActionConnectionCache.actionRpcMap.entrySet()) {
+//            e.getValue().initWeight();
+//        }
+//
+//    }
 
 
     /**
@@ -141,41 +130,26 @@ public class NodePoolManager {
         for (NodeInfo nodeInfo : nodeDatas) {
             /**step1: 建立连接*/
             ConnectionPoolFactory.getInstance().zkSyncRpcServer(nodeInfo);
-            /**step2: 把节点按action分组,也就是同样服务功能的服务器放一起*/
-            String[] actions = nodeInfo.getActions();
-            for (String action : actions) {
-                ActionNodeWeight actionNodeContext = ActionConnectionCache.getActionNodeWeightByAction(action);
-                if (actionNodeContext == null) {
-                    actionNodeContext = new ActionNodeWeight();
-                    ActionNodeWeight old = ActionConnectionCache.addActionRpcSrv(action, actionNodeContext);
-                    if (old != null) {
-                        actionNodeContext = old;
-                    }
-                }
-                /**添加节点信息 加入到action weight中*/
-                actionNodeContext.addNode(nodeInfo);
-            }
+            /**step2: 添加服务节点信息*/
+            RpcLoadBalance.getInstance().addNode(nodeInfo);
         }
-        /**step3: 初始化权重数据*/
-        for (Map.Entry<String, ActionNodeWeight> e : ActionConnectionCache.actionRpcMap.entrySet()) {
-            e.getValue().initWeight();
-        }
-
+        /**step3: 初始化服务节点权重*/
+        RpcLoadBalance.getInstance().initWeight();
     }
 
 
     /**
-     * 根据action/ip选择服务器,支持权重
+     * 根据选择服务器,支持权重
      */
     public RpcClient chooseRpcClient(String action) {
         try {
             lock.readLock().lock();
-            ActionNodeWeight actionNodeContext = ActionConnectionCache.getActionNodeWeightByAction(action);
-            if (actionNodeContext == null) {
-                logger.info("chooseClientPool: can not find pool - " + action);
-                return null;
+            String  channelKey = RpcLoadBalance.getInstance().chooseNodeChannel();
+            if (StringUtils.isEmpty(channelKey)) {
+                logger.info(">>>>>>> channel 不存在，请检查服务是否发生异常！！！");
+                throw new RPCException(" channel 不存在，请检查调用服务是否发生异常！！！");
             }
-            String channelKey = actionNodeContext.nextNode();
+            logger.info(">>>>>>> current choose server node key :{} ",channelKey);
             return ConnectionCache.get(channelKey);
 
         } finally {

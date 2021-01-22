@@ -20,7 +20,7 @@ public class Request implements Serializable {
     /**
      * 接口名称
      */
-    private String interfaceName;
+    private String serviceBeanName;
 
     /**
      * 版本号
@@ -38,12 +38,12 @@ public class Request implements Serializable {
     private Object[] paramters;
 
 
-    public String getInterfaceName() {
-        return interfaceName;
+    public String getServiceBeanName() {
+        return serviceBeanName;
     }
 
-    public void setInterfaceName(String interfaceName) {
-        this.interfaceName = interfaceName;
+    public void setServiceBeanName(String serviceBeanName) {
+        this.serviceBeanName = serviceBeanName;
     }
 
     public String getVersion() {

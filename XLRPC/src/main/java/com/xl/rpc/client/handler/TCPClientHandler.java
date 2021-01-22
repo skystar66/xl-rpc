@@ -16,6 +16,9 @@ import org.slf4j.LoggerFactory;
 
 import java.net.ConnectException;
 import java.time.Duration;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @author xuliang
@@ -28,6 +31,8 @@ public class TCPClientHandler extends SimpleChannelInboundHandler<Message> {
     private static final Logger logger = LoggerFactory.getLogger(TCPClientHandler.class);
     private Message heartCmd;
 
+
+    private static ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()*2);
 
     /**
      * 构造心跳消息
@@ -42,14 +47,20 @@ public class TCPClientHandler extends SimpleChannelInboundHandler<Message> {
     protected void channelRead0(ChannelHandlerContext ctx, Message msg) throws Exception {
 
         //System.out.println("TCPRouteHandler-HandlerMessage:" + msg.getId() + "-" + Thread.currentThread().getName());
-        @SuppressWarnings("unchecked")
-        Callback<Message> cb = (Callback<Message>) CallbackPool.remove(msg.getId());
-        if (cb == null) {
-            //找不到回调//可能超时被清理了
-            logger.warn("Receive msg from server but no context found, requestId=" + msg.getId() + "," + ctx);
-            return;
-        }
-        cb.handleResult(msg);
+//        @SuppressWarnings("unchecked")
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                Callback<Message> cb = (Callback<Message>) CallbackPool.remove(msg.getId());
+                if (cb == null) {
+                    //找不到回调//可能超时被清理了
+                    logger.warn("Receive msg from server but no context found, requestId=" + msg.getId() + "," + ctx);
+                    return;
+                }
+                cb.handleResult(msg);
+            }
+        });
+
     }
 
     @Override
@@ -67,31 +78,33 @@ public class TCPClientHandler extends SimpleChannelInboundHandler<Message> {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
-        logger.info("channelInactive(" + ctx + ")");
+        logger.error("channelInactive(" + ctx + ")");
         String rpcServer = ctx.channel().attr(AttributeKeys.RPC_SERVER).get();
         Integer rpcPort = ctx.channel().attr(AttributeKeys.RPC_PORT).get();
         Integer rpcIndex = ctx.channel().attr(AttributeKeys.RPC_INDEX).get();
 
         String localAddress = ctx.channel().localAddress().toString();
         String remoteAddress = ctx.channel().remoteAddress().toString();
-        logger.info("连接非活动!!!! rpcServer={}, rpcPort={}, channel={}, localAddress={}", rpcServer, rpcPort, ctx.channel(), localAddress);
+        logger.error("连接非活动!!!! rpcServer={}, rpcPort={}, channel={}, localAddress={}", rpcServer, rpcPort, ctx.channel(), localAddress);
 
         closeChannel(ctx);
+        //todo 恢复重连
         //解决IP为0.0.0.0/0.0.0.0:33703的问题
-        if(localAddress.startsWith("0.0.0.0") || remoteAddress.startsWith("0.0.0.0")){
-            //停止
-            logger.error("localAddress={} 为无效地址, 停止重连!", localAddress);
-        }else{
-            logger.info("开始执行重连业务...");
-            //重连连接
-            NodeInfo nodeInfo = new NodeInfo();
-            nodeInfo.setRpcServerIndex(rpcIndex);
-            nodeInfo.setIp(rpcServer);
-            nodeInfo.setPort(rpcPort);
-            nodeInfo.setRetrySize(3);
-            MQProvider.getRetryConnectQueue().push(nodeInfo, Duration.ofMillis(500));
-
-        }
+//        if(localAddress.startsWith("0.0.0.0") || remoteAddress.startsWith("0.0.0.0")){
+//            //停止
+//            logger.error("localAddress={} 为无效地址, 停止重连!", localAddress);
+//        }else{
+//
+//
+//        }
+        logger.info("开始执行重连业务...");
+        //重连连接
+        NodeInfo nodeInfo = new NodeInfo();
+        nodeInfo.setRpcServerIndex(rpcIndex);
+        nodeInfo.setIp(rpcServer);
+        nodeInfo.setPort(rpcPort);
+        nodeInfo.setRetrySize(3);
+        MQProvider.getRetryConnectQueue().push(nodeInfo, Duration.ofMillis(500));
     }
 
     private void closeChannel(ChannelHandlerContext ctx) throws Exception {

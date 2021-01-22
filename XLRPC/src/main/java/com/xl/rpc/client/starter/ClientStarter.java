@@ -54,7 +54,7 @@ public class ClientStarter {
 
     private Channel channel;
     // TODO 考虑改成静态,所有连接公用同一个线程池
-    private static EventLoopGroup bossGroup =  new NioEventLoopGroup(1);
+    private static EventLoopGroup bossGroup =  new NioEventLoopGroup();
 
 
     public ClientStarter() {

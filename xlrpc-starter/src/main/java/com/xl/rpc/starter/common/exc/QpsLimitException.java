@@ -7,6 +7,6 @@ package com.xl.rpc.starter.common.exc;
  */
 public class QpsLimitException extends Exception {
     public QpsLimitException() {
-        super("QpsLimitException");
+        super("QpsLimitException access limit！！！");
     }
 }

@@ -65,11 +65,8 @@ public class ConnectQueueMonitor {
                         NodeInfo msg = retryConnectQueue.pop(timeout);
                         RpcClientManager.getInstance().connect(msg, msg.getRpcServerIndex());
                     }
-                    try {
-                        /**500ms执行一次*/
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                    }
+                    /**1000ms执行一次*/
+                    Thread.sleep(1000);
                 } catch (Exception ignore) {
                     log.error("retryConnectQueue.pop", ignore);
                 }
