@@ -9,9 +9,11 @@ import com.xl.rpc.config.ServerConfig;
 import com.xl.rpc.exception.RPCException;
 import com.xl.rpc.message.Message;
 import com.xl.rpc.statistics.StatisticsManager;
+import com.xl.rpc.utils.ThreadPoolUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -89,7 +91,7 @@ public class RemoteRpcClientManager {
                 Message request = new Message();
                 request.setId(Message.createID());
                 request.setContent(content);
-                rpcClient.sendAsync(request, new AsyncCallback(callback, rpcClient.getIpPort(), request), rpcTimeOut);
+                rpcClient.sendAsync(request, new AsyncCallback(callback, rpcClient.getIpPort(), request,action), rpcTimeOut);
                 return true;
             } else {
                 logger.error("can no choose pool:" + action);
@@ -113,27 +115,36 @@ public class RemoteRpcClientManager {
          */
         private Callback<byte[]> resultCallBack;
         private String ipport;
+        /**请求模块*/
+        private String action;
 
-        public AsyncCallback(Callback<byte[]> resultCallBack, String ipport, Message message) {
+        public AsyncCallback(Callback<byte[]> resultCallBack, String ipport, Message message,String action) {
             this.resultCallBack = resultCallBack;
             this.ipport = ipport;
+            this.action = action;
             /**统计*/
-            StatisticsManager.getInstance().start(ipport, message);
+            StatisticsManager.getInstance().start(ipport, action,message);
 
         }
 
         @Override
         public void handleResult(Message result) {
             resultCallBack.handleResult(result.getContent());
-            /**统计*/
-            StatisticsManager.getInstance().success(ipport, result);
+            /**异步执行统计调用量*/
+            ThreadPoolUtils.getInstance().getExecutorService().submit(new Runnable() {
+                @Override
+                public void run() {
+                    /**统计*/
+                    StatisticsManager.getInstance().success(ipport, action,result);
+                }
+            });
         }
 
         @Override
         public void handleError(Throwable error) {
             resultCallBack.handleError(error);
             /**统计*/
-            StatisticsManager.getInstance().fail(ipport, error);
+            StatisticsManager.getInstance().fail(ipport, action,error);
         }
     }
 }

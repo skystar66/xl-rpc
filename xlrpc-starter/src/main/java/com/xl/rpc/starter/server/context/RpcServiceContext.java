@@ -27,7 +27,6 @@ public class RpcServiceContext {
     /**该服务的qps大小*/
     public float qps;
 
-
     /**
      * 服务的限流qps
      */

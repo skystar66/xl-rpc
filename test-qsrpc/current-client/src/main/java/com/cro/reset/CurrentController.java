@@ -27,7 +27,7 @@ public class CurrentController {
 
     private final static int PORT = 10086;
     private final static int count = 125000;// 8 * 125000=100万请求
-    //    private final static int count = 1;//
+//        private final static int count = 1;//
     private final static int thread = DEFAULT_THREAD_POOL_SIZE;//x个请求线程
     private final static long totalReqCount = count * thread;//总共请求
     private final static String zip = "";//gzip snappy
@@ -102,9 +102,11 @@ public class CurrentController {
     static Runnable asyncPOOL = new Runnable() {
         @Override
         public void run() {
+            String content = System.currentTimeMillis()+"dhasiuhdijdoiasjdoiwoiraosdhauifhi";
+
             for (int i = 0; i < count; i++) {
                 Message msg = new Message();
-                msg.setContent(req);
+                msg.setContent(content.getBytes());
                 sendAsyncTest(msg, callback);
             }
         }

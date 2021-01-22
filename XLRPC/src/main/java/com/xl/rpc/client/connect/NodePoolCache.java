@@ -2,6 +2,7 @@
 package com.xl.rpc.client.connect;
 
 import com.xl.rpc.client.RpcClient;
+import com.xl.rpc.client.loadbalance.weight.RpcLoadBalance;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -77,6 +78,7 @@ public class NodePoolCache {
                 /**当该节点所有的channel 都挂掉之后，移除节点*/
                 actionRpcList.remove(channelKey);
                 nodePoolMap.remove(node);
+                RpcLoadBalance.getInstance().removeNode(node);
             }
             ConnectionCache.remove(channelKey);
             actionRpcList.remove(channelKey);

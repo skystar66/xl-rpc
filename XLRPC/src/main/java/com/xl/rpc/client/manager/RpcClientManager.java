@@ -62,16 +62,17 @@ public class RpcClientManager {
                 if (client0 == null) {
                     synchronized (key.intern()) {
                         RpcClient client = new RpcClient(nodeInfo, index,key);   //服务端IP， 端口， 连接池索引
-                        NodePoolCache.addActionRpcSrv(nodeInfo.getIp(),key,client);
-                        log.info("@@@@RPC Server 重连成功！key={},     imServerIp={},	 localIp={},    clientMap.get(key)={},   clientMap.size()={}", key, rpcServer, localIp,
-                                ConnectionCache.get(key), ConnectionCache.rpcPoolSize());
-                    }
+                        if (client.connection()) {
+                            NodePoolCache.addActionRpcSrv(nodeInfo.getIp(),key,client);
+                            isConnected = true;
+                            log.info("@@@@RPC Server 连接成功！key={},     imServerIp={},	 localIp={},    clientMap.get(key)={},   clientMap.size()={}", key, rpcServer, localIp, ConnectionCache.get(key), ConnectionCache.rpcPoolSize());
+                            }
+                        }
                 } else {
                     log.info("map中 {}   连接已存在,停止连接  client0={} !!!!!!!!!!!!!!", key, client0);
                     break;
                 }
 
-                isConnected = true;
 
             } catch (Exception e) {
 //                ConnectionCache.remove(key);

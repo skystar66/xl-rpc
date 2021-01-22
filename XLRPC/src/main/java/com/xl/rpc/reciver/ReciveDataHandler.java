@@ -41,4 +41,34 @@ public class ReciveDataHandler extends SimpleChannelInboundHandler<Message> {
         // 通知执行下一个InboundHandler
         ctx.fireChannelRead(cmd);
     }
+
+
+    @Override
+    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+        super.channelRegistered(ctx);
+    }
+
+    @Override
+    public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+        super.channelUnregistered(ctx);
+    }
+
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        super.channelActive(ctx);
+        log.info("@@@@@@ channel is active！！！");
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        super.channelInactive(ctx);
+        log.error("@@@@@@ channel is inActive！！！");
+    }
+
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        super.exceptionCaught(ctx, cause);
+        log.error("@@@@@@ exceptionCaught：{]",cause);
+    }
 }

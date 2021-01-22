@@ -39,13 +39,15 @@ public class RpcClient {
         this.index = index;
         this.nodeInfo=nodeInfo;
         this.key=key;
-        connection();
+//        connection();
     }
 
 
-    public void connection() {
-        if (isConnect())
-            return;
+    public boolean connection() {
+        if (isConnect()){
+            log.info("###### channel is open！");
+            return true;
+        }
         ChannelFuture channelFuture = ClientStarter.getInstance().connect(nodeInfo);
 
         channel = channelFuture.channel();
@@ -66,8 +68,7 @@ public class RpcClient {
                         channel.attr(AttributeKeys.RPC_POOL_KEY).get());
             }
         });
-
-
+        return isConnect();
     }
 
     public boolean isConnect() {

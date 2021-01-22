@@ -3,6 +3,7 @@ package com.xl.rpc.starter.client;
 import com.alibaba.fastjson.JSONObject;
 import com.xl.rpc.client.remote.RemoteRpcClientManager;
 import com.xl.rpc.starter.common.serialize.ISerialize;
+import com.xl.rpc.starter.common.utils.BeanNameUtil;
 import com.xl.rpc.starter.common.utils.CGlib;
 import com.xl.rpc.starter.dto.Request;
 import com.xl.rpc.starter.dto.Response;
@@ -27,7 +28,7 @@ public class XLRpcPorxy implements MethodInterceptor {
     private Class target; // 代理对象接口
 
     private XLRpcReference XLRpcReference;
-    private String interfaceName, version;
+    private String serviceBeanName, version;
     private int timeout;
     private String action;//选择action
 
@@ -38,18 +39,11 @@ public class XLRpcPorxy implements MethodInterceptor {
         this.target = target;
         this.XLRpcReference = XLRpcReference;
         this.iSerialize = iSerialize;
-        //初始化数据
-        interfaceName = target.getName();
-        if (XLRpcReference.value().isEmpty()) {
-            version = XLRpcReference.version();
-        } else {
-            version = XLRpcReference.value();
-        }
-        if (XLRpcReference.ip_port().isEmpty()) {
-            action = interfaceName + XLRpcReference.value();
-        } else {
-            action = XLRpcReference.ip_port();
-        }
+        this.version=XLRpcReference.version();
+
+        this.serviceBeanName = BeanNameUtil.getInstance().getServiceBeanName(target.getName(),
+                XLRpcReference.value(),XLRpcReference.version());
+        this.action=serviceBeanName;
 
         timeout = XLRpcReference.timeout();
         if (timeout <= 0) timeout = RemoteRpcClientManager.RpcTimeout;
@@ -64,21 +58,19 @@ public class XLRpcPorxy implements MethodInterceptor {
 
         long start = System.currentTimeMillis();
         Request request = new Request();
-        request.setInterfaceName(interfaceName);
+        request.setServiceBeanName(serviceBeanName);
         request.setVersion(version);
         request.setMethodName(method.toString());
         request.setParamters(objects);
         /**请求id*/
         Long reqId = SnowflakeIdWorker.getInstance().nextId();
         request.setReqId(reqId);
-        String serverName = request.getInterfaceName() + request.getVersion();
-        logger.info("Client Invoke Request Server reqId: {} | Action: {} | ReqServerName: {} | Params: {}"
-                ,reqId, action,serverName,JSONObject.toJSONString(request
-        ));
+        logger.info("Client Invoke Request Server reqId: {}  | serviceBeanName: {} | Params: {}"
+                ,reqId,serviceBeanName,request.getParamters());
         byte[] bytes = RemoteRpcClientManager.getInstance().sendSync(action, iSerialize.serialize(request));
         Response response = iSerialize.deserialize(bytes, Response.class);
-        logger.info("Client Invoke Recive Server Cost Time: {}ms | reqId: {} | ReqServerName: {} | Action: {} | Response: {}"
-                ,System.currentTimeMillis()-start,reqId,serverName, action,JSONObject.toJSONString(response
+        logger.info("Client Invoke Recive Server Response Cost Time: {}ms | reqId: {} | serviceBeanName: {} | Response: {}"
+                ,System.currentTimeMillis()-start,reqId,serviceBeanName,JSONObject.toJSONString(response
                 ));
         if (response.getException() != null) {
             throw response.getException();
