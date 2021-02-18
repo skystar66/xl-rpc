@@ -14,6 +14,7 @@ import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by xl
@@ -33,6 +34,9 @@ public class XLRpcPorxy implements MethodInterceptor {
     private String action;//选择action
 
     private ISerialize iSerialize;
+
+
+    private static AtomicInteger atomicInteger = new AtomicInteger(0);
 
 
     public XLRpcPorxy(Class target, XLRpcReference XLRpcReference, ISerialize iSerialize) {
@@ -56,6 +60,7 @@ public class XLRpcPorxy implements MethodInterceptor {
     @Override
     public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
 
+        logger.info("客户端收到消息数：{} methodName:{}",atomicInteger.incrementAndGet(),method.toString());
         long start = System.currentTimeMillis();
         Request request = new Request();
         request.setServiceBeanName(serviceBeanName);

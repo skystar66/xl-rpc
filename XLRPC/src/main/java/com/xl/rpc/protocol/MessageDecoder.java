@@ -57,6 +57,7 @@ public class MessageDecoder extends ByteToMessageDecoder {
         // 判断已接收内容长度
         if (in.readableBytes() < msgLength) {
             // in.resetReaderIndex();
+            logger.error("发生分包>>>>>>>>>>>>>>>");
             return;
         }
         // 内容足够了,开始读取
@@ -89,4 +90,8 @@ public class MessageDecoder extends ByteToMessageDecoder {
         msgLength = 0;
     }
 
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        logger.error("MessageDecoder is error:{}",cause);
+    }
 }

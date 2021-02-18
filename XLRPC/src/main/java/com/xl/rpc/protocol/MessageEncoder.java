@@ -62,4 +62,10 @@ public class MessageEncoder extends MessageToByteEncoder<Message> {
 
     }
 
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        log.error("MessageEncoder is error:{}",cause);
+    }
+
 }

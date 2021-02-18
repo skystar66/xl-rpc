@@ -71,7 +71,7 @@ public class ClientListener implements ApplicationListener<ContextRefreshedEvent
             if (XLRpcReference != null) {
 
                 Class<?> c = f.getType();
-                if (!c.isInterface()) new IllegalArgumentException(f + " @QSRpcReference 必须注解在一个接口上");
+                if (!c.isInterface()) new IllegalArgumentException(f + " @XLRpcReference 必须注解在一个接口上");
                 Object porxy = new XLRpcPorxy(c, XLRpcReference, iSerialize).getPorxy();//创建代理
 
                 f.setAccessible(true);
