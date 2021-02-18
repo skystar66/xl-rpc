@@ -63,6 +63,8 @@ public class StatisticsManager {
 
     public void fail(String ipport,String action, Throwable t) {
 
+        logger.error("action >>>>>>> error:{}",t
+        );
     }
 
 
@@ -72,7 +74,7 @@ public class StatisticsManager {
             @Override
             public void run() {
                 for (Map.Entry<String, AtomicLong> stringAtomicLongEntry : qpsMap.entrySet()) {
-                    logger.info("@@@@@@ serverName:{} serverQps:{}",stringAtomicLongEntry.getKey(),
+                    logger.info("@@@@@@QPS serverName:{} serverQps:{}",stringAtomicLongEntry.getKey(),
                             stringAtomicLongEntry.getValue().get());
                 }
             }

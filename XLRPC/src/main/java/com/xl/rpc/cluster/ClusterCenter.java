@@ -112,43 +112,4 @@ public class ClusterCenter {
         zkHelp.subscribeDataChanges(listenerPath
                 , listener);
     }
-
-
-    /**
-     * Server RPC连接池监控
-     */
-    public void listenerServerRpcPoolSize() {
-        rpcPoolSize = zkHelp.getValue(ServerConfig.KEY_RPC_POOL_SIZE);
-        log.info("serverRpcPoolSize:{}", serverRpcList);
-        IZkDataListener listener = new IZkDataListener() {
-            @Override
-            public void handleDataChange(String parentPath, byte[] bytes) throws Exception {
-                rpcPoolSize = new String(bytes);
-                // 监听到子节点变化 更新cluster
-                log.info("----->>>>> Starting rpcPoolSize data change " + parentPath + " rpcPoolSize=" + rpcPoolSize);
-//                eventListener.rpcPoolChange(Integer.parseInt(rpcPoolSize));
-            }
-
-            @Override
-            public void handleDataDeleted(String s) throws Exception {
-            }
-        };
-        // 监控节点变更
-        zkHelp.subscribeDataChanges(ServerConfig.KEY_RPC_POOL_SIZE, listener);
-    }
-
-    /**
-     * 获取Live服务IP
-     * 根据hashCode取余
-     *
-     * @param flag
-     * @return
-     */
-    public String getServerIp(long flag) {
-        long num = Math.abs(flag) % serverRpcList.size();
-        String ip = serverRpcList.get((int) num);
-        return ip;
-    }
-
-
 }

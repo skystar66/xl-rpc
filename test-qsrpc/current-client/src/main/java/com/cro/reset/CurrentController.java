@@ -6,6 +6,7 @@ import com.xl.rpc.client.RpcClient;
 import com.xl.rpc.client.pool.NodePoolManager;
 import com.xl.rpc.exception.RPCException;
 import com.xl.rpc.message.Message;
+import com.xl.rpc.message.MessageBuf;
 import com.xl.rpc.zk.NodeInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.*;
 
 @RestController
@@ -24,6 +26,9 @@ public class CurrentController {
 
     private static final ExecutorService EXECUTOR_SERVICE = new ThreadPoolExecutor(DEFAULT_THREAD_POOL_SIZE,
             DEFAULT_THREAD_POOL_SIZE * 2, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(1024));
+
+
+    private static ScheduledExecutorService schedule = Executors.newScheduledThreadPool(10);
 
     private final static int PORT = 10086;
     private final static int count = 125000;// 8 * 125000=100万请求
@@ -61,11 +66,14 @@ public class CurrentController {
      */
     @RequestMapping(value = "/clientAsync", method = RequestMethod.GET)
     public String clientAsync() {
+        //todo
         for (int i = 0; i < thread; i++) {
             //160万并发：4-core-> time:13403ms ,qps:119376个 ,流量:14922KB/s ,平均请求延时:8194ms
             //100万并发  4-core-> time:7843ms ,qps:127502个 ,流量:15937KB/s ,平均请求延时:3922ms
             EXECUTOR_SERVICE.submit(asyncPOOL);
         }
+//        schedule.scheduleAtFixedRate(asyncPOOL,
+//                0,500, TimeUnit.MILLISECONDS);
         temp = System.currentTimeMillis();
         return "success";
     }
@@ -106,7 +114,7 @@ public class CurrentController {
 
             for (int i = 0; i < count; i++) {
                 Message msg = new Message();
-                msg.setContent(content.getBytes());
+                msg.setContent(makeMessage().toByteArray());
                 sendAsyncTest(msg, callback);
             }
         }
@@ -141,6 +149,19 @@ public class CurrentController {
         }
     };
 
+
+    public static MessageBuf.IMMessage makeMessage(){
+        MessageBuf.IMMessage.Builder msgBuilder = MessageBuf.IMMessage.newBuilder();
+        msgBuilder.setFrom(UUID.randomUUID().toString());
+        msgBuilder.setTo("0098778899");
+        msgBuilder.setContent("12321321312sddasdas"+System.currentTimeMillis());
+        msgBuilder.setCMsgId(System.currentTimeMillis());
+        msgBuilder.setType(MessageBuf.TypeEnum.ROOM_VALUE);
+        msgBuilder.setSubType(MessageBuf.SubTypeEnum.ROOM_DIY_VALUE);
+        msgBuilder.setDeviceId(UUID.randomUUID().toString());
+        msgBuilder.setAppId("liveme");
+        return msgBuilder.build();
+    }
 
     //同步POOL
     static Runnable syncPOOL = new Runnable() {

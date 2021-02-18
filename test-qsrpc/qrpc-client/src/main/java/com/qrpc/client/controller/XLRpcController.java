@@ -19,33 +19,45 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class XLRpcController {
 
 
-    @XLRpcReference(value = "apiServer",version = "1.0")
-     ApiServer rpcServer;
+    @XLRpcReference(value = "apiServer", version = "1.0")
+    ApiServer rpcServer;
 
 
-    private static ExecutorService executorService = Executors.newFixedThreadPool(100);
+    private static ExecutorService executorService = Executors.newFixedThreadPool(5);
 
 
     @ResponseBody
-    @RequestMapping(value = "/hello",method = RequestMethod.GET)
+    @RequestMapping(value = "/hello", method = RequestMethod.GET)
     public String hello() {
 
         AtomicInteger atomicInteger = new AtomicInteger(0);
+        AtomicInteger atomicIntegererror = new AtomicInteger(0);
 
         StringBuffer result = new StringBuffer();
         CountDownLatch countDownLatch = new CountDownLatch(200);
-        for (int i=0;i<200;i++) {
+//        for (int i=0;i<200;i++) {
+//
+//            executorService.submit(new Runnable() {
+//                @Override
+//                public void run() {
+//                    try {
+//                        log.info("####### 当前消息数：{}",atomicInteger.incrementAndGet());
+//                        rpcServer.hello("Welcome Use XL-RPC Framework !!!");
+//                        rpcServer.req("++req");
+////                    result.append(rpcServer.hello("Welcome Use XL-RPC Framework !!!"));
+////                    result.append(rpcServer.req("++req"));
+//
+////                    countDownLatch.countDown();
+//                    }catch (Exception ex) {
+//                     log.error("error:{} rpc error count:{}",ex,atomicIntegererror.incrementAndGet());
+//                    }
+//
+//                }
+//            });
+//        }
 
-            executorService.submit(new Runnable() {
-                @Override
-                public void run() {
-                    result.append(rpcServer.hello("Welcome Use XL-RPC Framework !!!")+
-                            rpcServer.req("+++req"));
-                    log.info("####### 当前消息数：{}",atomicInteger.incrementAndGet());
-//                    countDownLatch.countDown();
-                }
-            });
-        }
+        result.append(rpcServer.hello("Welcome Use XL-RPC Framework !!!"));
+        result.append(rpcServer.req("++req"));
 //        try {
 //            countDownLatch.await();
 //        }catch (Exception ex) {

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.*;
 
 @RestController
@@ -29,6 +30,8 @@ public class CurrentController {
 
     private static final ExecutorService EXECUTOR_SERVICE = new ThreadPoolExecutor(DEFAULT_THREAD_POOL_SIZE,
             DEFAULT_THREAD_POOL_SIZE * 2, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(1024));
+
+    private static ScheduledExecutorService schedule = Executors.newScheduledThreadPool(10);
 
     private final static int PORT = 10086;
     //    private final static int count = 125000;//
@@ -89,6 +92,7 @@ public class CurrentController {
     @RequestMapping(value = "/client",method = RequestMethod.GET)
     public String client() {
 
+        //todo
         for (int i = 0; i < thread; i++) {
 
             //异步线程池
@@ -97,6 +101,8 @@ public class CurrentController {
             //同步线程池,本无业务逻辑测试qps只有异步的30% ,猜测请求线程频繁休眠唤醒耗费性能
 //            EXECUTOR_SERVICE.submit(syncPOOL);
         }
+
+
         temp = System.currentTimeMillis();
 
         return "success";
@@ -125,6 +131,20 @@ public class CurrentController {
             }
         }
     };
+
+//    public static MessageBuf.IMMessage makeMessage(){
+//        MessageBuf.IMMessage.Builder msgBuilder = MessageBuf.IMMessage.newBuilder();
+//        msgBuilder.setFrom(UUID.randomUUID().toString());
+//        msgBuilder.setTo("0098778899");
+//        msgBuilder.setContent("12321321312sddasdas"+System.currentTimeMillis());
+//        msgBuilder.setCMsgId(System.currentTimeMillis());
+//        msgBuilder.setType(MessageBuf.TypeEnum.ROOM_VALUE);
+//        msgBuilder.setSubType(MessageBuf.SubTypeEnum.ROOM_DIY_VALUE);
+//        msgBuilder.setDeviceId(UUID.randomUUID().toString());
+//        msgBuilder.setAppId("liveme");
+//       return msgBuilder.build();
+//    }
+
     //异步POOL回调
     static Callback<Message> callback = new Callback<Message>() {
 
