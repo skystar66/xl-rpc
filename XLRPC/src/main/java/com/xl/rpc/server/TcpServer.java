@@ -17,12 +17,15 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.timeout.IdleStateHandler;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 public class TcpServer {
 
     private final int PORT;
+    private final String IP;
     private NodeInfo nodeInfo;
     private EventLoopGroup workerGroup;
     private EventLoopGroup bossGroup;
@@ -34,6 +37,7 @@ public class TcpServer {
         this.nodeInfo = nodeInfo;
         this.messageListener = messageListener;
         PORT = nodeInfo.getPort();
+        IP=nodeInfo.getIp();
     }
 
     /**
@@ -69,16 +73,13 @@ public class TcpServer {
 
                         @Override
                         protected void initChannel(SocketChannel ch) {
-
                             ChannelPipeline pipeline = ch.pipeline();
                             if (sslCtx != null) {
                                 pipeline.addLast(sslCtx.newHandler(ch.alloc()));
                             }
 
-
                             pipeline.addLast(new IdleStateHandler(10000,
                                     10000, 10000, TimeUnit.MILLISECONDS));
-
                             //pipeline.addLast(new LengthFieldBasedFrameDecoder(1024*1024, 0, 4, 0, 0));//组合消息包,参数0是消息最大长度,1,2参数是长度字段的位置,3是长度调整量,4去掉包头
                             pipeline.addLast(new MessageEncoder());// tcp消息编码
                             pipeline.addLast(new MessageDecoder());//  tcp消息解码
@@ -88,14 +89,13 @@ public class TcpServer {
                         }
                     });
 
-            channel = b.bind(PORT).sync().channel();//tcp监听完成
-
-            Log.i("NodeServer Launcher Success! ^_^ PORT:" + PORT);
+            channel = b.bind(IP,PORT).sync().channel();//tcp监听完成
+            log.info("Liveme.Rpc NodeServer Launcher Success! ^_^ IP:{} | PORT:{}",IP,PORT);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
             close();
-            Log.e("NodeServer Launcher Fail T^T: " + e.getMessage());
+            Log.e("Liveme.Rpc NodeServer Launcher Fail T^T: " + e.getMessage());
             return false;
         }finally {
             Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -131,7 +131,7 @@ public class TcpServer {
         channel = null;
         bossGroup = null;
         workerGroup = null;
-        Log.i("NodeServer Close Success! -^- PORT:" + PORT);
+        log.info("Liveme.Rpc NodeServer Close Success! -^- IP:{}: | PORT:{}" ,IP,PORT);
     }
 
 

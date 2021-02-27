@@ -78,6 +78,6 @@ public class CallbackPool {
         return CALLBACK_MAP.remove(requestId);
     }
 
-    private static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newScheduledThreadPool(1);//处理超时回调,一个线程
+    private static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newScheduledThreadPool(30);//处理超时回调,30个线程
 
 }

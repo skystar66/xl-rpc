@@ -138,6 +138,23 @@ public class NodePoolManager {
     }
 
 
+
+    /**
+     * 初始化连接并赋予权重值
+     */
+    public void initRpcPoolSize(List<NodeInfo> nodeDatas) {
+        for (NodeInfo nodeInfo : nodeDatas) {
+            /**step1: 建立连接*/
+            ConnectionPoolFactory.getInstance().zkSyncRpcServer(nodeInfo);
+//            /**step2: 添加服务节点信息*/
+//            RpcLoadBalance.getInstance().addNode(nodeInfo);
+        }
+//        /**step3: 初始化服务节点权重*/
+//        RpcLoadBalance.getInstance().initWeight();
+    }
+
+
+
     /**
      * 根据选择服务器,支持权重
      */
