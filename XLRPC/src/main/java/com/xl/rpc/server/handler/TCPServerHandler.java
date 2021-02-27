@@ -26,14 +26,18 @@ public class TCPServerHandler extends SimpleChannelInboundHandler<Message> {
     @Override
     protected void channelRead0(final ChannelHandlerContext channel, final Message message) throws Exception {
 
+
         executorService.submit(new Runnable() {
             @Override
             public void run() {
-
-                /**调用本地代理服务*/
-                byte[] result = messageListener.onMessage(message.getContent());
-                Message resMessage = responseMsg(message, result);
-                channel.writeAndFlush(resMessage);
+                try {
+                    /**调用本地代理服务*/
+                    byte[] result = messageListener.onMessage(message.getContent());
+                    Message resMessage = responseMsg(message, result);
+                    channel.writeAndFlush(resMessage);
+                } catch (Exception e) {
+                    logger.error("tcp server handler error:{}", e);
+                }
             }
         });
 

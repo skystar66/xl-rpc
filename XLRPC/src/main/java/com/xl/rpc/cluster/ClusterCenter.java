@@ -99,7 +99,7 @@ public class ClusterCenter {
                     log.error("onNodeDataChange.parseObject", e);
                 }
 
-                NodePoolManager.getInstance().onNodeChange(nodeInfos);
+                NodePoolManager.getInstance().initRpcPoolSize(nodeInfos);
             }
 
             @Override

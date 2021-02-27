@@ -79,6 +79,7 @@ public class RpcLoadBalance {
             /**很有可能当前节点服务全部挂掉*/
             throw new RPCException("######### 当前节点 node：" + node + " 服务不可用！！！");
         }
+        //todo 可以进行优化，随机就可以啦，不需要for啦，不然每次也会增加不必要的耗时
         int size = NodePoolCache.nodeRpcSize(node);
         int randomIndex = random.nextInt(size);
         int index = 0;
