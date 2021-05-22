@@ -6,3 +6,6 @@ local.properties
 /logs
 /target
 *.class
+*.log
+log
+logs
