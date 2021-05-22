@@ -31,7 +31,7 @@ public class CurrentController {
     private static ScheduledExecutorService schedule = Executors.newScheduledThreadPool(10);
 
     private final static int PORT = 10086;
-    private final static int count = 41667;// 8 * 125000=100万请求
+    private final static int count = 125000;// 8 * 125000=100万请求
 //        private final static int count = 1;//
     private final static int thread = DEFAULT_THREAD_POOL_SIZE;//x个请求线程
     private final static long totalReqCount = count * thread;//总共请求
@@ -64,8 +64,7 @@ public class CurrentController {
      * @desc:
      *       1,160万并发 压测结果：4core：time:13403ms ,qps:119376个 ,流量:14922KB/s ,平均请求延时:8194ms
      *       2,100万并发 压测结果：4-core-> time:7843ms ,qps:127502个 ,流量:15937KB/s ,平均请求延时:3922ms
-     *       3，100万并发 压测结果：12-core-> 1000008请求 -> time:20479ms ,qps:48830/s ,流量:7296KB/s ,平均请求延时:0ms
-     */
+     *       3，100万并发 压测结果：12-core-> 1000008请求 -> time:20479ms ,qps:48830/s ,流量:7296KB/s ,平均请求延时:0ms*/
     @RequestMapping(value = "/clientAsync", method = RequestMethod.GET)
     public String clientAsync() {
         //todo
@@ -184,6 +183,7 @@ public class CurrentController {
                             " ,qps:" + totalReqCount * 1000 / use + "/s" +
                             " ,流量:" + totalReqCount * (req.length + 12) * 1000 / use / 1024 + "KB/s" +
                             " ,平均请求延时:" + (use / totalReqCount) + "ms");
+
                 }
             }
         }
