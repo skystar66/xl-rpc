@@ -31,10 +31,11 @@ public class CurrentController {
     private static ScheduledExecutorService schedule = Executors.newScheduledThreadPool(10);
 
     private final static int PORT = 10086;
-    private final static int count = 125000;// 8 * 125000=100万请求
+    private final static int count = 41667;// 8 * 125000=100万请求
 //        private final static int count = 1;//
     private final static int thread = DEFAULT_THREAD_POOL_SIZE;//x个请求线程
     private final static long totalReqCount = count * thread;//总共请求
+//    private final static long totalReqCount = 1000000;//总共请求
     private final static String zip = "";//gzip snappy
     private final static int timeout = 60_000;
 
@@ -63,6 +64,7 @@ public class CurrentController {
      * @desc:
      *       1,160万并发 压测结果：4core：time:13403ms ,qps:119376个 ,流量:14922KB/s ,平均请求延时:8194ms
      *       2,100万并发 压测结果：4-core-> time:7843ms ,qps:127502个 ,流量:15937KB/s ,平均请求延时:3922ms
+     *       3，100万并发 压测结果：12-core-> 1000008请求 -> time:20479ms ,qps:48830/s ,流量:7296KB/s ,平均请求延时:0ms
      */
     @RequestMapping(value = "/clientAsync", method = RequestMethod.GET)
     public String clientAsync() {
@@ -83,6 +85,7 @@ public class CurrentController {
      * @desc:
      *       1，160万并发 压测结果：4-core-> use time:116627ms ,qps:13718个 ,流量:1714KB/s ,平均请求延时:0ms
      *       2，100万并发 压测结果：4-core-> use time:75253ms ,qps:13288个 ,流量:1661KB/s ,平均请求延时:0ms
+     *       3，100万并发 压测结果：12-core-> 1000008请求 -> time:20049ms ,qps:49878/s ,流量:7452KB/s ,平均请求延时:0ms
      */
     @RequestMapping(value = "/clientSync", method = RequestMethod.GET)
     public String client() {
@@ -134,10 +137,10 @@ public class CurrentController {
                     e.printStackTrace();
                 }
                 log.error(Runtime.getRuntime().availableProcessors()
-                        + "-core-> time:" + use + "ms" +
-                        " ,qps:" + totalReqCount * 1000 / use + "个" +
+                        + "-core-> "+totalReqCount+"请求 -> time:" + use + "ms" +
+                        " ,qps:" + totalReqCount * 1000 / use + "/s" +
                         " ,流量:" + totalReqCount * (res.getContent().length + 12) / 1024 * 1000 / use + "KB/s" +
-                        " ,平均请求延时:" + (requse / totalReqCount) + "ms"
+                        " ,平均请求延时:" + (use / totalReqCount) + "ms"
                 );
             }
         }
@@ -170,17 +173,17 @@ public class CurrentController {
         public void run() {
             for (int i = 0; i < count; i++) {
                 Message msg = new Message();
-                msg.setContent(req);
+                msg.setContent(makeMessage().toByteArray());
                 Message res = sendSyncTest(msg);
                 requse += (System.currentTimeMillis() - map.get(res.getId()));
 
                 if (res.getId() == totalReqCount) {
                     System.out.println("callback id-" + res.getId());
                     long use = System.currentTimeMillis() - temp;
-                    log.error("use time:" + use + "ms" +
-                            " ,qps:" + totalReqCount * 1000 / use + "个" +
+                    log.error(totalReqCount+"请求 -> use time:" + use + "ms" +
+                            " ,qps:" + totalReqCount * 1000 / use + "/s" +
                             " ,流量:" + totalReqCount * (req.length + 12) * 1000 / use / 1024 + "KB/s" +
-                            " ,平均请求延时:" + (requse / totalReqCount) + "ms");
+                            " ,平均请求延时:" + (use / totalReqCount) + "ms");
                 }
             }
         }

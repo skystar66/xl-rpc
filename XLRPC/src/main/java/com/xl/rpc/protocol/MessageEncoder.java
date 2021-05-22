@@ -1,6 +1,7 @@
 package com.xl.rpc.protocol;
 
 import com.xl.rpc.message.Message;
+import com.xl.rpc.utils.RPCConstants;
 import com.xl.rpc.zip.IZip;
 import com.xl.rpc.zip.Zip;
 import io.netty.buffer.ByteBuf;
@@ -15,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
  * 适用短连接/追求效率+比较可靠的长连接 包头长度+特定包尾 一旦丢包必须关闭重连,因为后面数据会错乱
  * <p>
  * 长度(4)包id(4)版本号(1)压缩类型(1)消息类型(1)内容(n)包尾(2)
- *
+ * <p>
  * 发送 编码
  */
 @Slf4j
@@ -35,15 +36,14 @@ public class MessageEncoder extends MessageToByteEncoder<Message> {
 //                in.toString());
         }
 
-
         byte[] content = in.getContent();
         if (content != null) {
             //判断是否需要压缩
             IZip iZip = Zip.get(in.getZip());
             if (iZip != null) content = iZip.compress(content);
-            out.writeInt(content.length + 9);
-        }else {
-            out.writeInt(9);
+            out.writeInt(content.length + RPCConstants.MSG_LENGTH);
+        } else {
+            out.writeInt(RPCConstants.MSG_LENGTH);
         }
 
         out.writeByte(in.getType());
@@ -65,7 +65,7 @@ public class MessageEncoder extends MessageToByteEncoder<Message> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("MessageEncoder is error:{}",cause);
+        log.error("MessageEncoder is error:{}", cause);
     }
 
 }

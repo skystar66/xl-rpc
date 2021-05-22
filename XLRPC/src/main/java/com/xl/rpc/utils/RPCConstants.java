@@ -16,6 +16,9 @@ public class RPCConstants {
     /**重试队列 线程数*/
     public static int retryQueueCount=3;
 
+    //消息协议默认长度
+    public static int MSG_LENGTH=9;
+
 
 
 }

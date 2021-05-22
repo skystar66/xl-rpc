@@ -2,6 +2,7 @@ package com.xl.rpc.protocol;
 
 import com.xl.rpc.config.ServerConfig;
 import com.xl.rpc.message.Message;
+import com.xl.rpc.utils.RPCConstants;
 import com.xl.rpc.zip.IZip;
 import com.xl.rpc.zip.Zip;
 import io.netty.buffer.ByteBuf;
@@ -37,14 +38,15 @@ public class MessageDecoder extends ByteToMessageDecoder {
 //		System.out.println(String.format("capacity:%s readerIndex:%s writeIndex:%s readeableBytes:%s writableBytes:%s",
 //				in.capacity(), in.readerIndex(), in.writerIndex(), in.readableBytes(), in.writableBytes()));
 
-        if (message == null && in.readableBytes() < 9) {
+        if (message == null && in.readableBytes()
+                < RPCConstants.MSG_LENGTH) {
             return;
         }
 
 
         if (message == null) {
             msgLength = in.readInt();
-            if (msgLength < 9 || msgLength > MAX_LEN) {// 传输出错了,错位
+            if (msgLength < RPCConstants.MSG_LENGTH || msgLength > MAX_LEN) {// 传输出错了,错位
                 logger.error("decode-len_err(" + ctx + ")-len:" + msgLength);
                 init();
                 ctx.close();
@@ -57,7 +59,7 @@ public class MessageDecoder extends ByteToMessageDecoder {
         // 判断已接收内容长度
         if (in.readableBytes() < msgLength) {
             // in.resetReaderIndex();
-            logger.error("发生分包>>>>>>>>>>>>>>>");
+            //netty不读取ByteBuf会累加增大,原生ByteBuffer不会
             return;
         }
         // 内容足够了,开始读取
@@ -67,7 +69,7 @@ public class MessageDecoder extends ByteToMessageDecoder {
 
         //ver=0逻辑,后续更新通信版本需要区分逻辑
         message.setZip(in.readByte());
-        byte[] content = new byte[msgLength - 9];
+        byte[] content = new byte[msgLength - RPCConstants.MSG_LENGTH];
         in.readBytes(content);
         // 是否压缩解码
         IZip iZip = Zip.get(message.getZip());

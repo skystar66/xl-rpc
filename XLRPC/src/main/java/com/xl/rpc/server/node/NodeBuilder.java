@@ -20,7 +20,7 @@ public class NodeBuilder {
         String node_ip = ServerConfig.getStringNotnull(ServerConfig.KEY_RPC_NODE_IP);
         //端口号
         int port = Integer.parseInt(ServerConfig.getStringNotnull(ServerConfig.KEY_RPC_NODE_PORT));
-        int rpcPoolSize =Integer.parseInt( ServerConfig.getStringNotnull(ServerConfig.KEY_RPC_POOL_SIZE));
+        int rpcPoolSize =Integer.parseInt(ServerConfig.getStringNotnull(ServerConfig.KEY_RPC_POOL_SIZE));
         //节点功能模块分类
         String node_action = ServerConfig.getString(ServerConfig.KEY_RPC_NODE_ACTION);
         //节点权重

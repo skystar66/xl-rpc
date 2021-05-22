@@ -12,8 +12,8 @@
     <artifactId>test-qsrpc</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>qrpc-server</module>
-        <module>qrpc-client</module>
+        <module>xl-server</module>
+        <module>xl-client</module>
         <module>api-sdk</module>
         <module>current-server</module>
         <module>current-client</module>
