@@ -5,6 +5,7 @@ local.properties
 .DS_Store
 /logs
 /target
+target
 *.class
 *.log
 log
