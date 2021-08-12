@@ -92,6 +92,9 @@ public class Message implements Serializable {
         return ++ID;
     }
 
+    public static synchronized void destoryID() {
+        ID=0;
+    }
     public byte getType() {
         return type;
     }

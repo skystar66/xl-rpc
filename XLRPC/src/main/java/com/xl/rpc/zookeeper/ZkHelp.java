@@ -3,6 +3,7 @@ package com.xl.rpc.zookeeper;
 import com.github.zkclient.IZkChildListener;
 import com.github.zkclient.IZkDataListener;
 import com.github.zkclient.ZkClient;
+import com.xl.rpc.config.ServerConfig;
 import com.xl.rpc.utils.AddressUtils;
 import com.xl.rpc.zookeeper.bean.Env;
 import org.slf4j.Logger;
@@ -98,17 +99,17 @@ public class ZkHelp {
 
 
 	private String getZkCluster() {
-		String zooKeeperCluster = System.getProperty("config.zkCluster");
-		if (zooKeeperCluster == null || "".equals(zooKeeperCluster)) {
-			// 开发环境
-			if (Env.isDev()) {
-				zooKeeperCluster = "127.0.0.1:2181";
-			}
-
-			logger.info("zooKeeperCluster={}", zooKeeperCluster);
-			return zooKeeperCluster;
-		}
-		return "";
+//		String zooKeeperCluster = System.getProperty("config.zkCluster");
+//		if (zooKeeperCluster == null || "".equals(zooKeeperCluster)) {
+//			// 开发环境
+//			if (Env.isDev()) {
+//				zooKeeperCluster = "127.0.0.1:2181";
+//			}
+//
+//			logger.info("zooKeeperCluster={}", zooKeeperCluster);
+//			return zooKeeperCluster;
+//		}
+		return ServerConfig.getStringNotnull(ServerConfig.KEY_RPC_ZK_IPS);
 	}
 	/**
 	 * 获取节点数据

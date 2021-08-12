@@ -8,7 +8,10 @@
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
 			<!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符 -->
-			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS,Asia/Shanghai} [%thread] %-5level %logger{0} - %msg%n</pattern>
+			<pattern>
+				%d{yyyy-MM-dd HH:mm:ss.SSS,Asia/Shanghai} [%thread] %-5level %logger{0} - %msg%n
+<!--				%d{yyyy-MM-dd HH:mm:ss.SSS,Asia/Shanghai} [%thread] %magenta(%-5level) %green([%-50.50class]) >>> %cyan(%msg) %n-->
+			</pattern>
 		</encoder>
 	</appender>
 
@@ -76,11 +79,7 @@
 	<!-- 日志输出级别 -->
 	<root level="INFO">
 		<appender-ref ref="FILE" />
-<<<<<<< HEAD
 		<appender-ref ref="STDOUT" />
-=======
-<!--		<appender-ref ref="STDOUT" />-->
->>>>>>> 98b5e93f1303e0c234da19d273a911856c6f23ba
 		<appender-ref ref="ALARM" />
 	</root>
 	

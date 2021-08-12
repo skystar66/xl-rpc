@@ -128,6 +128,7 @@ public class CurrentController {
         public void handleResult(Message res) {
             requestAdd(res.getId());
             if (res.getId() == totalReqCount) {
+                Message.destoryID();
                 System.out.println("callback id-" + res.getId());
                 long use = System.currentTimeMillis() - temp;
                 try {
@@ -178,8 +179,10 @@ public class CurrentController {
 
                 if (res.getId() == totalReqCount) {
                     System.out.println("callback id-" + res.getId());
+                    Message.destoryID();
                     long use = System.currentTimeMillis() - temp;
-                    log.error(totalReqCount+"请求 -> use time:" + use + "ms" +
+                    log.error(Runtime.getRuntime().availableProcessors()
+                            + "-core-> "+totalReqCount+"请求 -> use time:" + use + "ms" +
                             " ,qps:" + totalReqCount * 1000 / use + "/s" +
                             " ,流量:" + totalReqCount * (req.length + 12) * 1000 / use / 1024 + "KB/s" +
                             " ,平均请求延时:" + (use / totalReqCount) + "ms");

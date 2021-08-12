@@ -8,7 +8,11 @@
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
 			<!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符 -->
-			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS,Asia/Shanghai} [%thread] %-5level %logger{0} - %msg%n</pattern>
+			<pattern>
+				%d{yyyy-MM-dd HH:mm:ss.SSS,Asia/Shanghai} [%thread] %-5level %logger{0} - %msg%n
+<!--				%d{yyyy-MM-dd HH:mm:ss.SSS,Asia/Shanghai} [%thread] %magenta(%-5level) %green([%-50.50class]) >>> %cyan(%msg) %n-->
+
+			</pattern>
 		</encoder>
 	</appender>
 
@@ -24,7 +28,7 @@
 		</rollingPolicy>
 		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
 			<!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符 -->
-			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS,Asia/Shanghai} [%thread] %-5level %logger{0} - %msg%n</pattern>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS,Asia/Shanghai} [%thread] %-5level %logger{0} - %cyan(%msg) %n</pattern>
 		</encoder>
 		<!--日志文件最大的大小
 		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
@@ -32,26 +36,6 @@
 		</triggeringPolicy>
 		 -->
 	</appender>
-<!--	-->
-<!--	<appender name="rpc" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
-<!--	    <file>${LOG_HOME}/room/rpc.log</file>-->
-<!--		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
-<!--			&lt;!&ndash;日志文件输出的文件名 &ndash;&gt;-->
-<!--			<FileNamePattern>${LOG_HOME}/room/%d{yyyy-MM-dd,Asia/Shanghai,aux}/rpc.%d{yyyy-MM-dd,Asia/Shanghai}.log-->
-<!--			</FileNamePattern>-->
-<!--			&lt;!&ndash;日志文件保留天数 &ndash;&gt;-->
-<!--			<MaxHistory>5</MaxHistory>-->
-<!--		</rollingPolicy>-->
-<!--		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">-->
-<!--			&lt;!&ndash;格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符 &ndash;&gt;-->
-<!--			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS,Asia/Shanghai} [%thread] %-5level %logger{0} - %msg%n</pattern>-->
-<!--		</encoder>-->
-<!--	</appender>-->
-<!--	&lt;!&ndash; -->
-<!--	<logger name="com.liveme.im.client.rpc" level="INFO" additivity="false"> -->
-<!--		<appender-ref ref="rpc" />-->
-<!--	</logger> -->
-
 
 
  	    <!-- 按照每天每小时生成日志文件 -->
@@ -76,11 +60,8 @@
 	<!-- 日志输出级别 -->
 	<root level="INFO">
 		<appender-ref ref="FILE" />
-<<<<<<< HEAD
 		<appender-ref ref="STDOUT" />
-=======
 <!--		<appender-ref ref="STDOUT" />-->
->>>>>>> 98b5e93f1303e0c234da19d273a911856c6f23ba
 		<appender-ref ref="ALARM" />
 	</root>
 	
