@@ -15,23 +15,18 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.ssl.SslContext;
-import io.netty.handler.timeout.IdleStateHandler;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
 
-import java.util.concurrent.TimeUnit;
-
-public class ClientStarter {
+public class TCPClientServer {
 
 
 
     // 内部静态类方式
     private static class InstanceHolder {
-        private static ClientStarter instance = new ClientStarter();
+        private static TCPClientServer instance = new TCPClientServer();
     }
 
-    public static ClientStarter getInstance() {
-        return ClientStarter.InstanceHolder.instance;
+    public static TCPClientServer getInstance() {
+        return TCPClientServer.InstanceHolder.instance;
     }
 
 
@@ -57,7 +52,7 @@ public class ClientStarter {
     private static EventLoopGroup bossGroup =  new NioEventLoopGroup();
 
 
-    public ClientStarter() {
+    public TCPClientServer() {
     }
 
     public void setSslContext(SslContext sslContext) {

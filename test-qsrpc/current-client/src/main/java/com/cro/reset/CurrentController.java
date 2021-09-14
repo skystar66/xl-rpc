@@ -62,9 +62,11 @@ public class CurrentController {
     /**
      * 异步压测
      * @desc:
-     *       1,160万并发 压测结果：4core：time:13403ms ,qps:119376个 ,流量:14922KB/s ,平均请求延时:8194ms
-     *       2,100万并发 压测结果：4-core-> time:7843ms ,qps:127502个 ,流量:15937KB/s ,平均请求延时:3922ms
-     *       3，100万并发 压测结果：12-core-> 1000008请求 -> time:20479ms ,qps:48830/s ,流量:7296KB/s ,平均请求延时:0ms*/
+     *       1,160万并发 压测结果：4core：time:13403ms ,qps:119376个 ,流量:7896KB/s ,平均请求延时:8194ms
+     *       2,100万并发 压测结果：4-core-> time:7843ms ,qps:127502个 ,流量:7496KB/s ,平均请求延时:3922ms
+     *       3，100万并发 压测结果：12-core-> 1000008请求 -> time:20479ms ,qps:48830/s ,流量:7296KB/s ,平均请求延时:0ms
+     *       4，100万并发 压测结果：4-core-> 1000000请求 -> time:18728ms ,qps:53395/s ,流量:7978KB/s ,平均请求延时:0ms
+     *       */
     @RequestMapping(value = "/clientAsync", method = RequestMethod.GET)
     public String clientAsync() {
         //todo

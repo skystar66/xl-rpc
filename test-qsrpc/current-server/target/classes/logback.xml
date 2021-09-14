@@ -76,11 +76,7 @@
 	<!-- 日志输出级别 -->
 	<root level="INFO">
 		<appender-ref ref="FILE" />
-<<<<<<< HEAD
 		<appender-ref ref="STDOUT" />
-=======
-<!--		<appender-ref ref="STDOUT" />-->
->>>>>>> 98b5e93f1303e0c234da19d273a911856c6f23ba
 		<appender-ref ref="ALARM" />
 	</root>
 	

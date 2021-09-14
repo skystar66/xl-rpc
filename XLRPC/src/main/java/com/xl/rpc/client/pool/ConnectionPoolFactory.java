@@ -41,6 +41,7 @@ public class ConnectionPoolFactory {
         int rpcPoolSize = nodeInfo.getRpcPoolSize();
         int cacheRpcpoolSize = ConnectionCache.rpcPoolSize();
         int initIndex = 0;
+        /**这块是为啦连接池数的自动扩容做准备。*/
         if (cacheRpcpoolSize > 0) {
             initIndex = cacheRpcpoolSize;
         }

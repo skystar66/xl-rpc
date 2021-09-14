@@ -30,10 +30,10 @@ public class NodePoolManager {
     private static class InstanceHolder {
         private static NodePoolManager instance = new NodePoolManager();
     }
+
     public static NodePoolManager getInstance() {
         return NodePoolManager.InstanceHolder.instance;
     }
-
 
 
     private static final Logger logger = LoggerFactory.getLogger(NodePoolManager.class);
@@ -49,17 +49,18 @@ public class NodePoolManager {
     public void initNodePool() {
 
         /**获取节点列表*/
+        /**这里解释一下：获取的是某个业务服务下的节点列表，在使用时，会配置zkPath 路径， 例如这是一个 用户服务 zkPath=.../user/....*/
         List<String> nodeDatas = zkHelp.getChildren(ServerConfig.getString(ServerConfig.KEY_RPC_ZK_PATH));
         List<NodeInfo> nodeInfos = new ArrayList<>();
         for (String nodeIp : nodeDatas) {
             try {
                 /**获取当前节点数据*/
-                String nodeData = zkHelp.getValue(ServerConfig.getString(ServerConfig.KEY_RPC_ZK_PATH)+
-                        "/"+nodeIp);
+                String nodeData = zkHelp.getValue(ServerConfig.getString(ServerConfig.KEY_RPC_ZK_PATH) +
+                        "/" + nodeIp);
 
                 NodeInfo nodeInfo = JSON.parseObject(nodeData, NodeInfo.class);
                 nodeInfos.add(nodeInfo);
-                /**监控当前服务节点的变化*/
+                /**监听当前服务节点的变化*/
                 ClusterCenter.getInstance().listenerServerRpcConfig(nodeIp);
             } catch (Exception e) {
                 logger.error("onNodeDataChange.parseObject", e);
@@ -77,15 +78,15 @@ public class NodePoolManager {
 
         List<NodeInfo> nodeInfos = new ArrayList<>();
 
-            try {
-                /**获取当前节点数据*/
-                NodeInfo nodeInfo = NodeBuilder.buildNode();
-                String[] actions= new String[]{action};
-                nodeInfo.setActions(actions);
-                nodeInfos.add(nodeInfo);
-            } catch (Exception e) {
-                logger.error("onNodeDataChange.parseObject", e);
-            }
+        try {
+            /**获取当前节点数据*/
+            NodeInfo nodeInfo = NodeBuilder.buildNode();
+            String[] actions = new String[]{action};
+            nodeInfo.setActions(actions);
+            nodeInfos.add(nodeInfo);
+        } catch (Exception e) {
+            logger.error("onNodeDataChange.parseObject", e);
+        }
 
         /**初始化连接池及权重值变化*/
         initPoolAndWeight(nodeInfos);
@@ -138,7 +139,6 @@ public class NodePoolManager {
     }
 
 
-
     /**
      * 初始化连接并赋予权重值
      */
@@ -154,19 +154,18 @@ public class NodePoolManager {
     }
 
 
-
     /**
      * 根据选择服务器,支持权重
      */
     public RpcClient chooseRpcClient(String action) {
         try {
             lock.readLock().lock();
-            String  channelKey = RpcLoadBalance.getInstance().chooseNodeChannel();
+            String channelKey = RpcLoadBalance.getInstance().chooseNodeChannel();
             if (StringUtils.isEmpty(channelKey)) {
                 logger.info(">>>>>>> channel 不存在，请检查服务是否发生异常！！！");
                 throw new RPCException(" channel 不存在，请检查调用服务是否发生异常！！！");
             }
-            logger.info(">>>>>>> current choose server node key :{} ",channelKey);
+            logger.info(">>>>>>> current choose server node key :{} ", channelKey);
             return ConnectionCache.get(channelKey);
 
         } finally {
