@@ -61,7 +61,7 @@ public class RemoteRpcClientManager {
 
 
     /**
-     * 异步Future
+     * 同步Future
      */
     public CallFuture<byte[]> sendAsync(String action, byte[] content, int timeout) {
         CallFuture<byte[]> callFuture = CallFuture.newInstance();

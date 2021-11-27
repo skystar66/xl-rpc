@@ -14,7 +14,7 @@ import java.util.Arrays;
  *         2              4            1           1           4           1             Uncertainty
  * |__ __ __ __ __|__ __ __ __ __|__ __ __ __|__ __ __ __|__ __ __ __|__ __ __ __|_ __ __ __ __ __ __ __ __|
  * |              |              |           |           |           |           |                         |
- *        包尾        BodyLength       VER       Type           ID       ZIP           CONTENT
+ *        包尾        BodyLength       VER         Type         ID         ZIP             CONTENT
  * |__ __ __ __ __|__ __ __ __ __|__ __ __ __|__ __ __ __|__ __ __ __|__ __ __ __|__ __ __ ____ __ __ __ __|
  * */
 public class Message implements Serializable {

@@ -132,7 +132,7 @@ public class TCPClientHandler extends SimpleChannelInboundHandler<Message> {
             Integer rpcIndex = ctx.channel().attr(AttributeKeys.RPC_INDEX).get();
             String rpcPoolKey = ctx.channel().attr(AttributeKeys.RPC_POOL_KEY).get() ;
             Thread.sleep(1000 * 15);
-            logger.error("try connect tx-manager:{} ", ctx.channel().remoteAddress());
+            logger.error("try connect rpc server:{} ", ctx.channel().remoteAddress());
             NodePoolCache.removeActionRpcSrv(rpcServer,rpcPoolKey);
 
             //重连连接
