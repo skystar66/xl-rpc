@@ -3,6 +3,8 @@ package com.xl.rpc.client.handler;
 import com.xl.rpc.callback.Callback;
 import com.xl.rpc.callback.CallbackPool;
 import com.xl.rpc.client.connect.NodePoolCache;
+import com.xl.rpc.client.queue.QueueManagerClient;
+import com.xl.rpc.client.queue.disruptor.QueueManager;
 import com.xl.rpc.enums.MsgType;
 import com.xl.rpc.message.Message;
 import com.xl.rpc.mq.MQProvider;
@@ -17,8 +19,9 @@ import org.slf4j.LoggerFactory;
 import java.net.ConnectException;
 import java.time.Duration;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author xuliang
@@ -32,7 +35,10 @@ public class TCPClientHandler extends SimpleChannelInboundHandler<Message> {
     private Message heartCmd;
 
 
-    private static ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()*2);
+    //    private static ExecutorService executor = Executors.newFixedThreadPool(256);
+//    private ExecutorService executor = new ThreadPoolExecutor(
+//            32, 64, 600, TimeUnit.SECONDS, new LinkedBlockingQueue<>()
+//    );
 
     /**
      * 构造心跳消息
@@ -48,18 +54,27 @@ public class TCPClientHandler extends SimpleChannelInboundHandler<Message> {
 
         //System.out.println("TCPRouteHandler-HandlerMessage:" + msg.getId() + "-" + Thread.currentThread().getName());
 //        @SuppressWarnings("unchecked")
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                Callback<Message> cb = (Callback<Message>) CallbackPool.remove(msg.getId());
-                if (cb == null) {
-                    //找不到回调//可能超时被清理了
-                    logger.warn("Receive msg from server but no context found, requestId=" + msg.getId() + "," + ctx);
-                    return;
-                }
-                cb.handleResult(msg);
-            }
-        });
+        //todo 暂时先注释掉
+//        executor.submit(new Runnable() {
+//            @Override
+//            public void run() {
+//                Callback<Message> cb = (Callback<Message>) CallbackPool.remove(msg.getId());
+//                if (cb == null) {
+//                    //找不到回调//可能超时被清理了
+//                    logger.warn("Receive msg from server but no context found, requestId=" + msg.getId() + "," + ctx);
+//                    return;
+//                }
+//                cb.handleResult(msg);
+//
+////                CallHelper.INSTANCE.response(msg);
+//            }
+//        });
+
+//        com.xl.rpc.client.queue.mem.MQProvider.getToRPCMsgQueueByRandom().add(msg);
+
+        QueueManager.getInst().produce(msg);
+//        CallHelper.INSTANCE.response(msg);
+//        QueueManagerClient.getInstance().pushOutMessage(msg);
 
     }
 
@@ -109,9 +124,9 @@ public class TCPClientHandler extends SimpleChannelInboundHandler<Message> {
 
     private void closeChannel(ChannelHandlerContext ctx) throws Exception {
         //清除map中连接信息
-        String rpcPoolIndex = ctx.channel().attr(AttributeKeys.RPC_POOL_KEY).get() ;
+        String rpcPoolIndex = ctx.channel().attr(AttributeKeys.RPC_POOL_KEY).get();
         String rpcServer = ctx.channel().attr(AttributeKeys.RPC_SERVER).get();
-        NodePoolCache.removeActionRpcSrv(rpcServer,rpcPoolIndex);
+        NodePoolCache.removeActionRpcSrv(rpcServer, rpcPoolIndex);
         logger.info("清除rpcPoolIndex={}", rpcPoolIndex);
         ctx.channel().close().sync();
     }
@@ -130,10 +145,10 @@ public class TCPClientHandler extends SimpleChannelInboundHandler<Message> {
             String rpcServer = ctx.channel().attr(AttributeKeys.RPC_SERVER).get();
             Integer rpcPort = ctx.channel().attr(AttributeKeys.RPC_PORT).get();
             Integer rpcIndex = ctx.channel().attr(AttributeKeys.RPC_INDEX).get();
-            String rpcPoolKey = ctx.channel().attr(AttributeKeys.RPC_POOL_KEY).get() ;
+            String rpcPoolKey = ctx.channel().attr(AttributeKeys.RPC_POOL_KEY).get();
             Thread.sleep(1000 * 15);
             logger.error("try connect rpc server:{} ", ctx.channel().remoteAddress());
-            NodePoolCache.removeActionRpcSrv(rpcServer,rpcPoolKey);
+            NodePoolCache.removeActionRpcSrv(rpcServer, rpcPoolKey);
 
             //重连连接
             NodeInfo nodeInfo = new NodeInfo();

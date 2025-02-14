@@ -5,6 +5,7 @@ import com.xl.rpc.context.NettyContext;
 import com.xl.rpc.enums.MsgType;
 import com.xl.rpc.enums.NettyType;
 import com.xl.rpc.message.Message;
+import com.xl.rpc.server.manager.ChannelManager;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -57,12 +58,14 @@ public class ReciveDataHandler extends SimpleChannelInboundHandler<Message> {
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
         log.info("@@@@@@ channel is active！！！");
+        ChannelManager.addChannel(ctx.channel());
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
         log.error("@@@@@@ channel is inActive！！！");
+        ChannelManager.removeChannel(ctx.channel());
     }
 
 
@@ -70,5 +73,6 @@ public class ReciveDataHandler extends SimpleChannelInboundHandler<Message> {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         super.exceptionCaught(ctx, cause);
         log.error("@@@@@@ exceptionCaught：{]",cause);
+        ChannelManager.removeChannel(ctx.channel());
     }
 }

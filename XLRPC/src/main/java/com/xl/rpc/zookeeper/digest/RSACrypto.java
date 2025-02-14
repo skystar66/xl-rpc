@@ -1,7 +1,6 @@
 package com.xl.rpc.zookeeper.digest;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+
 
 import javax.crypto.Cipher;
 import java.io.ByteArrayOutputStream;
@@ -12,6 +11,7 @@ import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 import java.util.Properties;
 
 //import org.bouncycastle.asn1.ASN1Sequence;
@@ -121,7 +121,7 @@ public class RSACrypto {
         "-----END PUBLIC KEY-----", "").replaceAll("-----BEGIN RSA PUBLIC KEY-----", "").replaceAll(
             "-----END RSA PUBLIC KEY-----", "").replace("\n", "").trim();
 
-    byte[] keyBytes = new BASE64Decoder().decodeBuffer(publicKey);
+    byte[] keyBytes = Base64.getDecoder().decode(publicKey);
     X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
     KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
     Key publicK = keyFactory.generatePublic(x509KeySpec);
@@ -147,7 +147,7 @@ public class RSACrypto {
     }
     byte[] encryptedData = out.toByteArray();
     out.close();
-    return new BASE64Encoder().encodeBuffer(encryptedData);
+    return Base64.getEncoder().encodeToString(encryptedData);
   }
 
   /** */
@@ -221,7 +221,7 @@ public class RSACrypto {
         "-----END RSA PRIVATE KEY-----", "").replaceAll("-----BEGIN PRIVATE KEY-----", "")
         .replaceAll("-----END PRIVATE KEY-----", "").replaceAll("\n", "").trim();
 
-    byte[] keyBytes = new BASE64Decoder().decodeBuffer(privateKey);
+    byte[] keyBytes =  Base64.getDecoder().decode(privateKey);
     // RSAPrivateKeyStructure asn1PrivKey = new
     // RSAPrivateKeyStructure((ASN1Sequence)
     // ASN1Sequence.fromByteArray(keyBytes));
@@ -235,7 +235,7 @@ public class RSACrypto {
     Key privateK = keyFactory.generatePrivate(pkcs8KeySpec);
     Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
     cipher.init(Cipher.DECRYPT_MODE, privateK);
-    byte[] encryptedData = new BASE64Decoder().decodeBuffer(message);
+    byte[] encryptedData =  Base64.getDecoder().decode(message);
     int inputLen = encryptedData.length;
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     int offSet = 0;
@@ -274,7 +274,7 @@ public class RSACrypto {
    */
   public static boolean verify(String content, String sign, String publicKey) {
     try {
-      byte[] keyBytes = new BASE64Decoder().decodeBuffer(publicKey);
+      byte[] keyBytes = Base64.getDecoder().decode(publicKey);
       X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
       KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
       PublicKey publicK = keyFactory.generatePublic(x509KeySpec);
@@ -284,7 +284,7 @@ public class RSACrypto {
       signature.initVerify(publicK);
       signature.update(content.getBytes("UTF-8"));
 
-      boolean bverify = signature.verify(new BASE64Decoder().decodeBuffer(sign));
+      boolean bverify = signature.verify(Base64.getDecoder().decode(sign));
       return bverify;
 
     } catch (Exception e) {
@@ -345,7 +345,7 @@ public class RSACrypto {
       }
       
 
-      byte[] keyBytes = new BASE64Decoder().decodeBuffer(PUBLICKEY);
+      byte[] keyBytes = Base64.getDecoder().decode(PUBLICKEY);
       X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
       KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
       PublicKey publicK = keyFactory.generatePublic(x509KeySpec);
@@ -355,7 +355,7 @@ public class RSACrypto {
       signature.initVerify(publicK);
       signature.update(publicKey.getBytes("UTF-8"));
 
-      boolean bverify = signature.verify(new BASE64Decoder().decodeBuffer(sign));
+      boolean bverify = signature.verify(Base64.getDecoder().decode(sign));
       return bverify;
 
     } catch (Exception e) {

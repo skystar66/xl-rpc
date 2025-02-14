@@ -3,6 +3,7 @@ package com.xl.rpc.client;
 import com.xl.rpc.callback.CallFuture;
 import com.xl.rpc.callback.Callback;
 import com.xl.rpc.callback.CallbackPool;
+import com.xl.rpc.client.manager.CallHelper;
 import com.xl.rpc.client.starter.TCPClientServer;
 import com.xl.rpc.exception.RPCException;
 import com.xl.rpc.message.Message;
@@ -14,7 +15,11 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Rpc 连接登录 客户端
@@ -99,19 +104,41 @@ public class RpcClient {
                     + "-can no connect:" + getInfo()));
         }
     }
+    public static final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
 
+
+    public static final AtomicLong count = new AtomicLong(0);
+
+    static {
+
+        scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+//                log.info("Client Sent count:{}", count.get());
+            }
+        }, 1, 5, TimeUnit.SECONDS);
+    }
     /**
      * 同步,返回响应信息 路由不建议用,访问延迟大将会导致线程挂起太久,CPU无法跑满,而解决方法只有新建更多线程,性能不好
      */
     public Message sendSync(Message request, int timeout) throws InterruptedException, RPCException {
         if (isConnect()) {
+            //todo 注释一下
 
             CallFuture<Message> future = CallFuture.newInstance();
             CallbackPool.put(request.getId(), future);
             channel.writeAndFlush(request);
+//
+//            count.incrementAndGet();
+//
+//            return CallHelper.INSTANCE.call(channel, request, timeout);
+
+//
             try {
                 return future.get(timeout, TimeUnit.MILLISECONDS);
-            } finally {
+            }catch (Exception e){
+                throw e;
+            }finally {
                 CallbackPool.remove(request.getId());//移除上下文
             }
         } else {

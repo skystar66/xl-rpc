@@ -7,6 +7,7 @@ import com.xl.rpc.listener.MessageListener;
 import com.xl.rpc.log.Log;
 import com.xl.rpc.protocol.MessageDecoder;
 import com.xl.rpc.protocol.MessageEncoder;
+import com.xl.rpc.queue.QueueManager;
 import com.xl.rpc.reciver.ReciveDataHandler;
 import com.xl.rpc.server.handler.TCPServerHandler;
 import com.xl.rpc.zk.NodeInfo;
@@ -91,6 +92,8 @@ public class TcpServer {
 
             channel = b.bind(IP,PORT).sync().channel();//tcp监听完成
             log.info("Liveme.Rpc NodeServer Launcher Success! ^_^ IP:{} | PORT:{}",IP,PORT);
+
+//            QueueManager.getInstance();
             return true;
         } catch (Exception e) {
             e.printStackTrace();

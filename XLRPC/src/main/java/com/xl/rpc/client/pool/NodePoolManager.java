@@ -159,17 +159,17 @@ public class NodePoolManager {
      */
     public RpcClient chooseRpcClient(String action) {
         try {
-            lock.readLock().lock();
+//            lock.readLock().lock();
             String channelKey = RpcLoadBalance.getInstance().chooseNodeChannel();
             if (StringUtils.isEmpty(channelKey)) {
                 logger.info(">>>>>>> channel 不存在，请检查服务是否发生异常！！！");
                 throw new RPCException(" channel 不存在，请检查调用服务是否发生异常！！！");
             }
-            logger.info(">>>>>>> current choose server node key :{} ", channelKey);
+//            logger.info(">>>>>>> current choose server node key :{} ", channelKey);
             return ConnectionCache.get(channelKey);
 
         } finally {
-            lock.readLock().unlock();
+//            lock.readLock().unlock();
         }
 
     }

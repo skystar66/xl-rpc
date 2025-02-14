@@ -108,7 +108,7 @@ public class CurrentController {
 
         }
 
-        return "success";
+        return "server start ok! port:"+ info.getPort();
 
     }
 

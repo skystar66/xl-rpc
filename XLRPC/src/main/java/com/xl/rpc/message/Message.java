@@ -2,6 +2,7 @@ package com.xl.rpc.message;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.xl.rpc.utils.SnowflakeIdWorker;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -90,6 +91,9 @@ public class Message implements Serializable {
 
     public static synchronized int createID() {
         return ++ID;
+    }
+    public static Long create2ID() {
+        return SnowflakeIdWorker.getInstance().nextId();
     }
 
     public static synchronized void destoryID() {

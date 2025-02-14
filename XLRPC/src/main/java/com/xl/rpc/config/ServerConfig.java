@@ -44,7 +44,7 @@ public class ServerConfig {
     static {
         properties = new Properties();
         try {
-            InputStream is = Object.class.getResourceAsStream(PROPRETIES_PATH);
+            InputStream is = ServerConfig.class.getResourceAsStream(PROPRETIES_PATH);
             properties.load(is);
         } catch (IOException e) {
             e.printStackTrace();

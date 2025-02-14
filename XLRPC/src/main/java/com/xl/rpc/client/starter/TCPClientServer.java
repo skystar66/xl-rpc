@@ -31,13 +31,13 @@ public class TCPClientServer {
 
 
     // 连接配置,需要再独立成配置类
-    private static final int connTimeout = 18 * 1000;
+    private static final int connTimeout = 10 * 1000;
 
     private static final boolean soKeepalive = true;
 
     private static final boolean soReuseaddr = true;
 
-    private static final boolean tcpNodelay = false;
+    private static final boolean tcpNodelay = true;
 
     private static final int soRcvbuf = 1024 * 256;
 
@@ -49,7 +49,7 @@ public class TCPClientServer {
 
     private Channel channel;
     // TODO 考虑改成静态,所有连接公用同一个线程池
-    private static EventLoopGroup bossGroup =  new NioEventLoopGroup();
+    private static EventLoopGroup bossGroup =  new NioEventLoopGroup(Runtime.getRuntime().availableProcessors());
 
 
     public TCPClientServer() {
@@ -92,15 +92,6 @@ public class TCPClientServer {
                     pipeline.addLast(new KeepaliveHandler());//心跳
                     pipeline.addLast(new ReciveDataHandler());
                     pipeline.addLast(new TCPClientHandler());
-
-                    // 以"$_"作为分隔符
-                    /*
-                     * ChannelPipeline pipeline = ch.pipeline(); pipeline.addLast("encoder", new
-                     * StringEncoder(CharsetUtil.UTF_8)); String s = "$_"; ByteBuf byteBuf =
-                     * Unpooled.copiedBuffer(s.getBytes()); pipeline.addLast(new
-                     * DelimiterBasedFrameDecoder(Integer.MAX_VALUE,byteBuf)); pipeline.addLast(new
-                     * StringDecoder()); pipeline.addLast(new MyHeartSocket());
-                     */
 
                 }
             });

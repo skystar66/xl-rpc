@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option java_package = "com.xlRpc.grpc.common.rpc";
+option java_outer_classname = "GrpcServerService";
+option java_multiple_files = false;
+
+// 定义通用的 Grpc 服务
+service CommonService {
+    // 处理请求
+    rpc handle ( Request ) returns ( Response ) {}
+}
+
+// 定义通用的 Grpc 请求体
+message Request {
+    int32 requestId = 1;
+    bytes request = 2;
+}
+
+// 定义通用的 Grpc 响应体
+message Response {
+    int32 requestId = 1;
+    bytes response = 2;
+}
