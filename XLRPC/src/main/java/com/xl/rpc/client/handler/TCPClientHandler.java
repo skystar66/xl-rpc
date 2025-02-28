@@ -4,7 +4,9 @@ import com.xl.rpc.callback.Callback;
 import com.xl.rpc.callback.CallbackPool;
 import com.xl.rpc.client.connect.NodePoolCache;
 import com.xl.rpc.client.queue.QueueManagerClient;
+import com.xl.rpc.client.queue.concurrent.MQProviderC;
 import com.xl.rpc.client.queue.disruptor.QueueManager;
+import com.xl.rpc.client.queue.disruptor.QueueManager2;
 import com.xl.rpc.enums.MsgType;
 import com.xl.rpc.message.Message;
 import com.xl.rpc.mq.MQProvider;
@@ -71,8 +73,14 @@ public class TCPClientHandler extends SimpleChannelInboundHandler<Message> {
 //        });
 
 //        com.xl.rpc.client.queue.mem.MQProvider.getToRPCMsgQueueByRandom().add(msg);
+//        MQProviderC.getToRPCMsgQueueByRandom().add(msg);
 
         QueueManager.getInst().produce(msg);
+
+//        Message copy = Message.copy(msg);
+
+//        QueueManager2.getInst().produce(copy);
+//        com.xl.rpc.client.queue.mem.MQProvider.
 //        CallHelper.INSTANCE.response(msg);
 //        QueueManagerClient.getInstance().pushOutMessage(msg);
 

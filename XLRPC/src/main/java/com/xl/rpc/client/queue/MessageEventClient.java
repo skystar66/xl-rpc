@@ -9,5 +9,7 @@ public class MessageEventClient<T> {
 
     private T msg;
 
-
+    public void clear() {
+        msg = null;
+    }
 }

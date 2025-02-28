@@ -37,9 +37,9 @@ public class RpcUpMsgConsumer {
         stop_flag = true;
     }
 
-    private ExecutorService executor = new ThreadPoolExecutor(
-            32, 64, 600, TimeUnit.SECONDS, new LinkedBlockingQueue<>()
-    );
+//    private ExecutorService executor = new ThreadPoolExecutor(
+//            32, 64, 600, TimeUnit.SECONDS, new LinkedBlockingQueue<>()
+//    );
 
     private class RpcMsgSender implements Runnable {
 
@@ -66,7 +66,7 @@ public class RpcUpMsgConsumer {
                     }
                     Message msg = toRPCMsgQueue.take();
                     if (msg != null) {
-                        executor.submit(() -> {
+//                        executor.submit(() -> {
                             Callback<Message> cb = (Callback<Message>) CallbackPool.remove(msg.getId());
                             if (cb == null) {
                                 //找不到回调//可能超时被清理了
@@ -74,7 +74,7 @@ public class RpcUpMsgConsumer {
                                 return;
                             }
                             cb.handleResult(msg);
-                        });
+//                        });
                     }
                 } catch (Exception ignore) {
                 }

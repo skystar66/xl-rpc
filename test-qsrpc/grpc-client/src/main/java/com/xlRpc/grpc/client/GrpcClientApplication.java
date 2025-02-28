@@ -35,7 +35,7 @@ public class GrpcClientApplication {
 
     static List<ManagedChannel> channels = new CopyOnWriteArrayList<>();
 
-    static int size = 64;
+    static int size = 8;
 
     static Random random = new Random();
 
@@ -55,19 +55,19 @@ public class GrpcClientApplication {
         AtomicInteger failedCnt = new AtomicInteger(0);
 
 
-        ManagedChannel channel = GrpcClient.getChannel("127.0.0.1", 50001);
+//        ManagedChannel channel = GrpcClient.getChannel("127.0.0.1", 50001);
 
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < thread; i++) {
             //160万并发：4-core-> use time:116627ms ,qps:13718个 ,流量:1714KB/s ,平均请求延时:0ms
             //100万并发：4-core-> use time:75253ms ,qps:13288个 ,流量:1661KB/s ,平均请求延时:0ms
             EXECUTOR_SERVICE.submit(new Runnable() {
                 @Override
                 public void run() {
-                    for (int j = 0; j < 1; j++) {
+                    for (int j = 0; j < count; j++) {
 
                         try {
 
-//                            ManagedChannel channel = getChannel();
+                            ManagedChannel channel = getChannel();
                             Message msg = new Message();
                             msg.setContent(makeMessage().toByteArray());
                             CommonServiceGrpc.CommonServiceBlockingStub stub = CommonServiceGrpc.newBlockingStub(channel)

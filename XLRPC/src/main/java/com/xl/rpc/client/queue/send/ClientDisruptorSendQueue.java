@@ -36,12 +36,16 @@ public class ClientDisruptorSendQueue {
             ringBuffer.publish(sequence);
         }
     }
+//    private final int threadNum = Runtime.getRuntime().availableProcessors() * 2;
+
+
+    private final int threadNum = 1;
 
     public  void init(){
         // 指定 ring buffer字节大小，必需为2的N次方(能将求模运算转为位运算提高效率 )，否则影响性能
         int bufferSize = 1024 * 1024;
         //固定线程数
-        ExecutorService executor = Executors.newFixedThreadPool(1);
+        ExecutorService executor = Executors.newFixedThreadPool(threadNum);
         EventFactory<MessageEventClient<Message>> factory = new EventFactory<MessageEventClient<Message>>() {
             @Override
             public MessageEventClient newInstance() {
@@ -49,10 +53,10 @@ public class ClientDisruptorSendQueue {
             }
         };
         // 创建ringBuffer
-        ringBuffer = RingBuffer.create(ProducerType.SINGLE, factory, bufferSize,
+        ringBuffer = RingBuffer.create(ProducerType.MULTI, factory, bufferSize,
                 new YieldingWaitStrategy());
         SequenceBarrier barriers = ringBuffer.newBarrier();
-        ClientDisruptorConsumer[] consumers = new ClientDisruptorConsumer[1];
+        ClientDisruptorConsumer[] consumers = new ClientDisruptorConsumer[threadNum];
         for (int i = 0; i < consumers.length; i++) {
             consumers[i] = new ClientDisruptorConsumer();
         }

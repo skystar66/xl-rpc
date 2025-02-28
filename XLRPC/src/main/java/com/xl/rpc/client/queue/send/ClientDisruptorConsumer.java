@@ -48,21 +48,30 @@ public class ClientDisruptorConsumer implements WorkHandler<MessageEventClient<M
 
     @Override
     public void onEvent(MessageEventClient<Message> imMessageMessageEventClient) throws Exception {
+
         Message msg = imMessageMessageEventClient.getMsg();
-        // TODO: 2023/10/26 调用router发送IM消息
+
+        try {
+
+            // TODO: 2023/10/26 调用router发送IM消息
 //        executorService.submit(new Runnable() {
 //            @Override
 //            public void run() {
-                Callback<Message> cb = (Callback<Message>) CallbackPool.remove(msg.getId());
-                if (cb == null) {
-                    //找不到回调//可能超时被清理了
-                    log.warn("Receive msg from server but no context found, requestId=" + msg.getId() + ",");
-                    return;
-                }
-                cb.handleResult(msg);
-                count.incrementAndGet();
+            Callback<Message> cb = (Callback<Message>) CallbackPool.remove(msg.getId());
+            if (cb == null) {
+                //找不到回调//可能超时被清理了
+                log.warn("Receive msg from server but no context found, requestId=" + msg.getId() + ",");
+                return;
+            }
+            cb.handleResult(msg);
+//                log.info("Receive msg from server, requestId=" + msg.getId() + ",");
+            count.incrementAndGet();
 //            }
 //        });
+        } finally {
+            imMessageMessageEventClient.clear(); //清楚GC
+        }
+
     }
 
 }

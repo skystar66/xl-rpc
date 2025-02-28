@@ -108,6 +108,16 @@ public class Message implements Serializable {
     }
 
 
+    public static Message copy(Message msg){
+
+        Message msg_cb = new Message();
+        msg_cb.setId(msg.getId());
+        msg_cb.setZip(msg.getZip());
+        msg_cb.setVer(msg.getVer());
+        msg_cb.setContent(msg.getContent());
+        return msg_cb;
+    }
+
     @Override
     public String toString() {
         return "Message{" +

@@ -5,7 +5,9 @@ import com.xl.rpc.callback.Callback;
 import com.xl.rpc.client.RpcClient;
 import com.xl.rpc.client.pool.NodePoolManager;
 import com.xl.rpc.client.queue.QueueManagerClient;
+import com.xl.rpc.client.queue.concurrent.GroupChatMsgFastQueueConsumer;
 import com.xl.rpc.client.queue.disruptor.QueueManager;
+import com.xl.rpc.client.queue.disruptor.QueueManager2;
 import com.xl.rpc.client.queue.mem.RpcUpMsgConsumer;
 import com.xl.rpc.message.Message;
 import com.xl.rpc.message.MessageBuf;
@@ -73,7 +75,10 @@ public class CurrentController {
 
 //        RpcUpMsgConsumer.getInstance().start();
 
-        QueueManager.getInst();
+//        QueueManager.getInst();
+
+        GroupChatMsgFastQueueConsumer.getInstance().start();
+//        QueueManager2.getInst();
 //        QueueManagerClient.getInstance().init();
         return "client init success!";
 

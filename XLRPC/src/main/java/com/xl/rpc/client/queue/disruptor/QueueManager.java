@@ -17,8 +17,8 @@ public class QueueManager {
     private static QueueManager inst = new QueueManager();
     private static final int BUFFER_SIZE = 1024 * 1024;
     private final RingBuffer<MessageEventClient<Message>> ringBuffer;
-    private final int threadNum = Runtime.getRuntime().availableProcessors() * 2;
-//    private final int threadNum = 8;
+//    private final int threadNum = Runtime.getRuntime().availableProcessors() * 2;
+        private final int threadNum = Runtime.getRuntime().availableProcessors();
     private final Executor executor = Executors.newFixedThreadPool(this.threadNum);
 
     private QueueManager() {

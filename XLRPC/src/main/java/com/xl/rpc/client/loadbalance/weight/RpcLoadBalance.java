@@ -82,14 +82,18 @@ public class RpcLoadBalance {
         //todo 可以进行优化，随机就可以啦，不需要for啦，不然每次也会增加不必要的耗时
         int size = NodePoolCache.nodeRpcSize(node);
         int randomIndex = random.nextInt(size);
-        int index = 0;
-        for (String channelKey : channelKeys) {
-            if (index == randomIndex) {
-                return channelKey;
-            }
-            index++;
+        if (randomIndex==0){
+            return channelKeys.get(0);
         }
-        return null;
+        return  channelKeys.get(randomIndex-1);
+//        int index = 0;
+//        for (String channelKey : channelKeys) {
+//            if (index == randomIndex) {
+//                return channelKey;
+//            }
+//            index++;
+//        }
+//        return null;
     }
 
     /**

@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * @author xuliang
@@ -39,6 +40,7 @@ public class QueueManagerClient {
         init();
     }
 
+    Random random=new Random();
 
     public void init() {
         for (int i = 0; i < outThreadCount; i++) {
@@ -59,6 +61,21 @@ public class QueueManagerClient {
 
 
     /**
+     * 得到与index相匹配的队列
+     *
+     * @param index
+     * @return
+     */
+    public ClientDisruptorSendQueue getRandomDisruptorSendQueueByIndex() {
+
+
+        int index = random.nextInt(outThreadCount);
+
+        return disruptorSendQueueMap.get(index-1);
+    }
+
+
+    /**
      * 得到与key 取模的队列
      *
      * @param key
@@ -66,7 +83,7 @@ public class QueueManagerClient {
      */
     public ClientDisruptorSendQueue getDisruptorSendQueueByIndex(String key) {
         int index = HashCodeUtils.getHashCode(key) % outThreadCount;
-        ClientDisruptorSendQueue clientDisruptorSendQueue = disruptorSendQueueMap.get(index);
+        ClientDisruptorSendQueue clientDisruptorSendQueue = disruptorSendQueueMap.get(index-1);
         if (null == clientDisruptorSendQueue) {
             log.error("queue index:" + index);
             return null;
@@ -76,7 +93,20 @@ public class QueueManagerClient {
 
     public void pushOutMessage(Message msg) {
         if (null != msg) {
-            getDisruptorSendQueueByIndex(String.valueOf(msg.getId())).produceData(msg);
+            ClientDisruptorSendQueue randomDisruptorSendQueueByIndex =null;
+            try {
+                 randomDisruptorSendQueueByIndex = getRandomDisruptorSendQueueByIndex();
+
+            }catch (Exception e){
+                log.error("获取随机队列err:",e);
+            }
+
+            if (randomDisruptorSendQueueByIndex!=null){
+                randomDisruptorSendQueueByIndex.produceData(msg);
+            }
+
+
+
         }
     }
 
