@@ -10,4 +10,10 @@ public interface MessageListener {
 
     byte[] onMessage(final byte[] message);
 
+
+    default byte[] onMessage(final long msgId, final byte[] message) {
+        return null;
+    }
+
+
 }

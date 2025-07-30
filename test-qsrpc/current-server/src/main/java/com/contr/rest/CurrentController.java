@@ -1,6 +1,7 @@
 package com.contr.rest;
 
 
+import com.contr.statics.StaticsManager;
 import com.xl.rpc.callback.Callback;
 import com.xl.rpc.client.RpcClient;
 import com.xl.rpc.client.pool.NodePoolManager;
@@ -9,12 +10,14 @@ import com.xl.rpc.exception.RPCException;
 import com.xl.rpc.listener.MessageListener;
 import com.xl.rpc.log.Log;
 import com.xl.rpc.message.Message;
+import com.xl.rpc.message.MessageBuf;
 import com.xl.rpc.server.ServerStarter;
 import com.xl.rpc.server.node.NodeBuilder;
 import com.xl.rpc.zk.NodeInfo;
 import com.xl.rpc.zookeeper.ZkHelp;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -96,6 +99,18 @@ public class CurrentController {
         new Thread(new ServerStarter(info, new MessageListener() {
             @Override
             public byte[] onMessage(byte[] message) {
+                return new byte[0];
+            }
+            @Override
+            public byte[] onMessage(final long msgId,final byte[] message) {
+                try {
+                    MessageBuf.IMMessage imMessage = MessageBuf.IMMessage.parseFrom(message);
+                    StaticsManager.getInstance().msgQpsIncrement();
+                    StaticsManager.getInstance().msgDelayReport(msgId,
+                            System.currentTimeMillis() - imMessage.getServerTime());
+                } catch (Exception e) {
+
+                }
                 return message;
             }
         })).start();
@@ -108,9 +123,7 @@ public class CurrentController {
 
         }
 
-        return "server start ok! port:"+ info.getPort();
+        return "server start ok! port:" + info.getPort();
 
     }
-
-
 }

@@ -16,6 +16,8 @@
         <module>test-qsrpc/grpc-client</module>
         <module>test-qsrpc/grpc-server</module>
         <module>test-qsrpc/grpc-common</module>
+        <module>test-qsrpc/kafka-server</module>
+        <module>test-qsrpc/kafka-client</module>
     </modules>
 
 

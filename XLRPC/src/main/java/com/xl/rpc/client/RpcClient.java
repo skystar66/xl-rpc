@@ -104,6 +104,25 @@ public class RpcClient {
                     + "-can no connect:" + getInfo()));
         }
     }
+
+    public void sendAsync(Message request,int timeout){
+        /**校验是否已连接*/
+        if (isConnect()) {
+            if (timeout<=0) {
+                /**判断大于0,CallbackPool上下文必须有超时remove机制,否则内存泄漏*/
+//                callback.handleError(new RPCException(getClass().getName() +
+//                        ".sendAsync() timeout must > 0 :" + timeout));
+                return;
+            }
+            /**放入回调池中，并设置超时时间，超过时间后，自动清理回调*/
+//            CallbackPool.put(request.getId(),callback,timeout);
+            channel.writeAndFlush(request);
+        }else {
+//            callback.handleError(new RPCException(this.getClass().getName()
+//                    + "-can no connect:" + getInfo()));
+        }
+    }
+
     public static final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
 
 

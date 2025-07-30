@@ -1,0 +1,10 @@
+server:
+  port: 9170
+
+kafka:
+  servers: localhost:9092
+  producer:
+    topic: concurrent-topic
+    thread-count: 5
+    batch-size: 1000
+    batch-timeout: 1000

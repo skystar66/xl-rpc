@@ -77,7 +77,7 @@ public class CurrentController {
 
 //        QueueManager.getInst();
 
-        GroupChatMsgFastQueueConsumer.getInstance().start();
+//        GroupChatMsgFastQueueConsumer.getInstance().start();
 //        QueueManager2.getInst();
 //        QueueManagerClient.getInstance().init();
         return "client init success!";
@@ -100,6 +100,30 @@ public class CurrentController {
             //160万并发：4-core-> time:13403ms ,qps:119376个 ,流量:14922KB/s ,平均请求延时:8194ms
             //100万并发  4-core-> time:7843ms ,qps:127502个 ,流量:15937KB/s ,平均请求延时:3922ms
             EXECUTOR_SERVICE.submit(asyncPOOL);
+        }
+//        schedule.scheduleAtFixedRate(asyncPOOL,
+//                0,500, TimeUnit.MILLISECONDS);
+
+        return "success";
+    }
+
+
+    /**
+     * 异步压测、不接收回调
+     *
+     * @desc: 1, 160万并发 压测结果：4core：time:13403ms ,qps:119376个 ,流量:7896KB/s ,平均请求延时:8194ms
+     * 2,100万并发 压测结果：4-core-> time:7843ms ,qps:127502个 ,流量:7496KB/s ,平均请求延时:3922ms
+     * 3，100万并发 压测结果：12-core-> 1000008请求 -> time:20479ms ,qps:48830/s ,流量:7296KB/s ,平均请求延时:0ms
+     * 4，100万并发 压测结果：4-core-> 1000000请求 -> time:18728ms ,qps:53395/s ,流量:7978KB/s ,平均请求延时:0ms
+     */
+    @RequestMapping(value = "/clientAsyncWithCall", method = RequestMethod.GET)
+    public String clientAsyncWithCall() {
+        temp = System.currentTimeMillis();
+        //todo
+        for (int i = 0; i < thread; i++) {
+            //160万并发：4-core-> time:13403ms ,qps:119376个 ,流量:14922KB/s ,平均请求延时:8194ms
+            //100万并发  4-core-> time:7843ms ,qps:127502个 ,流量:15937KB/s ,平均请求延时:3922ms
+            EXECUTOR_SERVICE.submit(asyncPOOLWithCallback);
         }
 //        schedule.scheduleAtFixedRate(asyncPOOL,
 //                0,500, TimeUnit.MILLISECONDS);
@@ -193,6 +217,22 @@ public class CurrentController {
             }
         }
     };
+
+    //异步POOL
+    //4-core-> time:7774 ,qps:128633 ,流量:16079KB/s ,平均请求延时:360
+    static Runnable asyncPOOLWithCallback = new Runnable() {
+        @Override
+        public void run() {
+            for (int i = 0; i < count; i++) {
+                Message msg = new Message();
+                msg.setContent(makeMessage().toByteArray());
+                msg.setVer((byte) 2);
+                sendAsyncTest(msg);
+            }
+        }
+    };
+
+
     //异步POOL回调
     static Callback<Message> callback = new Callback<Message>() {
 
@@ -230,6 +270,8 @@ public class CurrentController {
         msgBuilder.setSubType(MessageBuf.SubTypeEnum.ROOM_DIY_VALUE);
         msgBuilder.setDeviceId("12222222222");
         msgBuilder.setAppId("liveme");
+        msgBuilder.setServerTime(System.currentTimeMillis());
+//        msgBuilder.setMsgId(Message.createID());
         return msgBuilder.build();
     }
 
@@ -293,6 +335,17 @@ public class CurrentController {
             request.setId(Message.createID());
             map.put(request.getId(), System.currentTimeMillis());
             tcpClient.sendAsync(request, callback, timeout);
+        }
+    }
+
+    //异步
+    static void sendAsyncTest(Message request) {
+        RpcClient tcpClient = NodePoolManager.getInstance().
+                chooseRpcClient("com.qrpc.api.ApiServerapiServer");
+        if (tcpClient != null) {
+            request.setId(Message.createID());
+            map.put(request.getId(), System.currentTimeMillis());
+            tcpClient.sendAsync(request, timeout);
         }
     }
 
