@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class StaticsManager {
 
     //消息延时统计
-    private static ConcurrentHashMap<Long, Long> msgDelayMap = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<Long, Long> msgDelayMap = new ConcurrentHashMap<>(512);
     //消息QPS
     private static AtomicDouble msgQpsMap = new AtomicDouble(0);
     //成功率
@@ -30,7 +30,6 @@ public class StaticsManager {
 
     private static AtomicLong totalMsgCnt = new AtomicLong(0);
 
-    private static AtomicLong lastUpdateTs = new AtomicLong(0);
 
     // 内部静态类方式
     private static class InstanceHolder {
@@ -67,23 +66,14 @@ public class StaticsManager {
         int size = msgDelayMap.size();
         msgDelayMap.clear();
         double avgTime = average.isPresent() ? average.getAsDouble() : 0;
-
-        double v = msgQpsMap.addAndGet(qps);
-
-        long l = lastUpdateTs.get();
-        double totalAvgQps = 0;
-        long consumerMs =0;
-        if (l > 0) {
-             consumerMs = System.currentTimeMillis() - l;
-            totalAvgQps = (double) v / (consumerMs / 1000.0);
-        }
         totalMsgCnt.addAndGet(size);
         //输出报告
         System.out.println("RPC Performance Test:");
-        System.out.println("Messages Cnt: " + totalMsgCnt.get());
+        System.out.println("Messages Cnt: " + size);
+        System.out.println("Total Messages Cnt: " + totalMsgCnt.get());
 //        System.out.println("Threads: " + ThreadPoolUtils.getKafkaPool().getMaximumPoolSize());
         System.out.println("Average QPS(s): " + qps);
-        System.out.println("Total Average QPS(s): " + totalAvgQps);
+//        System.out.println("Total Average QPS(s): " + totalAvgQps);
         System.out.println("Message Latency (in ms): " + avgTime);
         System.out.println("========================================================================= ");
         System.out.println("========================================================================= ");
@@ -95,7 +85,6 @@ public class StaticsManager {
      */
     public void msgQpsIncrement() {
         asyncThroughputMonitor.recordTaskCompletion();
-        lastUpdateTs.compareAndSet(0, System.currentTimeMillis());
     }
 
 

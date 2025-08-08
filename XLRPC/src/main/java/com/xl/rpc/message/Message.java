@@ -6,6 +6,7 @@ import com.xl.rpc.utils.SnowflakeIdWorker;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  *
@@ -88,9 +89,14 @@ public class Message implements Serializable {
     }
 
     private static int ID;
+    private static AtomicInteger ID_GEN = new AtomicInteger(0);
 
     public static synchronized int createID() {
         return ++ID;
+    }
+
+    public static int autoID() {
+        return ID_GEN.incrementAndGet();
     }
     public static Long create2ID() {
         return SnowflakeIdWorker.getInstance().nextId();
@@ -116,6 +122,12 @@ public class Message implements Serializable {
         msg_cb.setVer(msg.getVer());
         msg_cb.setContent(msg.getContent());
         return msg_cb;
+    }
+
+    public int bodyLength() {
+        if (content == null)
+            return 0;
+        return content.length;
     }
 
     @Override

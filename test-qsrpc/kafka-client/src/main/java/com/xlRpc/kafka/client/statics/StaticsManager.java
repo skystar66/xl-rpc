@@ -83,7 +83,7 @@ public class StaticsManager {
         System.out.println("Messages Cnt: " + size);
         System.out.println("Threads: " + ThreadPoolUtils.getKafkaPool().getMaximumPoolSize());
         System.out.println("Average QPS(s): " + qps);
-        System.out.println("Total Average QPS(s): " + totalAvgQps);
+//        System.out.println("Total Average QPS(s): " + totalAvgQps);
         System.out.println("Message Latency (in ms): " + avgTime);
         System.out.println("========================================================================= ");
         System.out.println("========================================================================= ");

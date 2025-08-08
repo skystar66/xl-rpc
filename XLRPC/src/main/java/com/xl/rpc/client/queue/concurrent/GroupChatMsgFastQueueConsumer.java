@@ -116,7 +116,7 @@ public class GroupChatMsgFastQueueConsumer {
         private void print() {
             scheduledExecutorService.scheduleAtFixedRate(() -> {
                 log.info("fast group queue index:{},queue.msg.size:{}", index, groupChatMsgQueue.size());
-            }, 0, 5, TimeUnit.SECONDS);
+            }, 0, 1, TimeUnit.SECONDS);
         }
 
         @Override

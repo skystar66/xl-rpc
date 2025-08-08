@@ -7,10 +7,12 @@ import com.xl.rpc.client.manager.CallHelper;
 import com.xl.rpc.client.starter.TCPClientServer;
 import com.xl.rpc.exception.RPCException;
 import com.xl.rpc.message.Message;
+import com.xl.rpc.server.statics.StaticsManager;
 import com.xl.rpc.utils.AttributeKeys;
 import com.xl.rpc.zk.NodeInfo;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import lombok.extern.slf4j.Slf4j;
@@ -30,25 +32,37 @@ import java.util.concurrent.atomic.AtomicLong;
 @Slf4j
 public class RpcClient {
 
-    /**连接索引*/
+    /**
+     * 连接索引
+     */
     private int index;
-    /**通道*/
+    /**
+     * 通道
+     */
     private Channel channel;
-    /**节点信息*/
+    /**
+     * 节点信息
+     */
     private NodeInfo nodeInfo;
 
     private String key;
 
-    public RpcClient(NodeInfo nodeInfo, int index,String key) {
+
+    public RpcClient(NodeInfo nodeInfo, int index, String key) {
         this.index = index;
-        this.nodeInfo=nodeInfo;
-        this.key=key;
+        this.nodeInfo = nodeInfo;
+        this.key = key;
 //        connection();
     }
 
 
+    public void flush() {
+        channel.flush();
+    }
+
+
     public boolean connection() {
-        if (isConnect()){
+        if (isConnect()) {
             log.info("###### channel is open！");
             return true;
         }
@@ -87,40 +101,48 @@ public class RpcClient {
      * @param callback 异步回调
      * @param timeout  CallbackPool上下文必须有超时remove机制,否则内存泄漏
      */
-    public void sendAsync(Message request,Callback<Message> callback,int timeout){
+    public void sendAsync(Message request, Callback<Message> callback, int timeout) {
         /**校验是否已连接*/
         if (isConnect()) {
-            if (timeout<=0) {
+            if (timeout <= 0) {
                 /**判断大于0,CallbackPool上下文必须有超时remove机制,否则内存泄漏*/
                 callback.handleError(new RPCException(getClass().getName() +
                         ".sendAsync() timeout must > 0 :" + timeout));
                 return;
             }
             /**放入回调池中，并设置超时时间，超过时间后，自动清理回调*/
-            CallbackPool.put(request.getId(),callback,timeout);
+            CallbackPool.put(request.getId(), callback, timeout);
             channel.writeAndFlush(request);
-        }else {
+        } else {
             callback.handleError(new RPCException(this.getClass().getName()
                     + "-can no connect:" + getInfo()));
         }
     }
 
-    public void sendAsync(Message request,int timeout){
+    public void sendAsync(Message request, int timeout) {
         /**校验是否已连接*/
-        if (isConnect()) {
-            if (timeout<=0) {
-                /**判断大于0,CallbackPool上下文必须有超时remove机制,否则内存泄漏*/
+//        if (isConnect()) {
+        if (timeout <= 0) {
+            /**判断大于0,CallbackPool上下文必须有超时remove机制,否则内存泄漏*/
 //                callback.handleError(new RPCException(getClass().getName() +
 //                        ".sendAsync() timeout must > 0 :" + timeout));
-                return;
-            }
-            /**放入回调池中，并设置超时时间，超过时间后，自动清理回调*/
+            return;
+        }
+        /**放入回调池中，并设置超时时间，超过时间后，自动清理回调*/
 //            CallbackPool.put(request.getId(),callback,timeout);
-            channel.writeAndFlush(request);
-        }else {
+//        channel.writeAndFlush(request).addListener(new GenericFutureListener<Future<? super Void>>() {
+//            @Override
+//            public void operationComplete(Future<? super Void> future) throws Exception {
+//                StaticsManager.getInstance().msgQpsIncrement();
+//            }
+//        });
+        channel.writeAndFlush(request);
+
+
+//        }else {
 //            callback.handleError(new RPCException(this.getClass().getName()
 //                    + "-can no connect:" + getInfo()));
-        }
+//        }
     }
 
     public static final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
@@ -137,6 +159,7 @@ public class RpcClient {
             }
         }, 1, 5, TimeUnit.SECONDS);
     }
+
     /**
      * 同步,返回响应信息 路由不建议用,访问延迟大将会导致线程挂起太久,CPU无法跑满,而解决方法只有新建更多线程,性能不好
      */
@@ -155,9 +178,9 @@ public class RpcClient {
 //
             try {
                 return future.get(timeout, TimeUnit.MILLISECONDS);
-            }catch (Exception e){
+            } catch (Exception e) {
                 throw e;
-            }finally {
+            } finally {
                 CallbackPool.remove(request.getId());//移除上下文
             }
         } else {

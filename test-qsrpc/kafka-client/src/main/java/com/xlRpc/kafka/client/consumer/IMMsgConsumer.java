@@ -21,7 +21,7 @@ import java.util.Properties;
 @Component
 public class IMMsgConsumer {
 
-    private KafkaConsumer<Object,Object> consumer;
+    private KafkaConsumer<Object, Object> consumer;
     private Logger log = LoggerFactory.getLogger(IMMsgConsumer.class);
 
     @Value("${kafka.consumer.topic}")
@@ -44,8 +44,8 @@ public class IMMsgConsumer {
             props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, MyMessageDeserializer.class.getName());
             props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
-            props.put("max.poll.records", 1);
-            props.put("fetch.max.bytes", Integer.MAX_VALUE - 1000);
+            props.put("max.poll.records", 500);
+            props.put("fetch.max.bytes", 50*1024 * 1024);
             consumer = new KafkaConsumer<>(props);
             consumer.subscribe(Collections.singletonList(topic));
             //注释 @PostConstruct 为现行执行计划，所以不能够直接的采用while循环，故启动一个线程
@@ -56,7 +56,7 @@ public class IMMsgConsumer {
 
     class StartConsumer extends Thread {
 
-        private KafkaConsumer<Object,Object> consumer;
+        private KafkaConsumer<Object, Object> consumer;
 
         public StartConsumer(KafkaConsumer<Object, Object> consumer) {
             this.consumer = consumer;
@@ -66,13 +66,15 @@ public class IMMsgConsumer {
         public void run() {
             while (true) {
                 ConsumerRecords<Object, Object> records = consumer.poll(100);
+
+//                System.out.println("records.count():" + records.count());
                 if (records.count() > 0) {
 //                    ThreadPoolUtils.getKafkaPool().execute(
 //                            new ChatMsgConsumerHandler(records));
 
                     for (ConsumerRecord<Object, Object> record : records) {
                         try {
-                            MessageBuf.IMMessage imMessage = (MessageBuf.IMMessage)record.value();
+                            MessageBuf.IMMessage imMessage = (MessageBuf.IMMessage) record.value();
                             //统计QPS、消息延时
                             StaticsManager.getInstance().msgQpsIncrement();
                             StaticsManager.getInstance().msgDelayReport(imMessage.getMsgId(),

@@ -9,6 +9,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class ClientRPCApplication {
     public static void main(String[] args) {
+        System.setProperty("io.netty.allocator.type", "pooled");
+        System.setProperty("io.netty.maxDirectMemory", "2g");
         SpringApplication.run(ClientRPCApplication.class, args);
     }
 }

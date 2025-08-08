@@ -3,6 +3,7 @@ package com.xl.rpc.client.loadbalance.weight;
 import com.xl.rpc.client.connect.NodePoolCache;
 import com.xl.rpc.client.remote.RemoteRpcClientManager;
 import com.xl.rpc.exception.RPCException;
+import com.xl.rpc.server.queue.RoundRobinLoadBalancer;
 import com.xl.rpc.zk.NodeInfo;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -10,8 +11,11 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 /**
@@ -35,15 +39,21 @@ public class RpcLoadBalance {
     }
 
     static {
-        statisPrintLoadBalanceSrv();
+//        statisPrintLoadBalanceSrv();
     }
 
     private static List<NodeInfo> nodeInfos = new CopyOnWriteArrayList<>();
+
+    private static Map<Integer, AtomicLong> nodeWeightMap = new ConcurrentHashMap<>();
 
     private short[] indexMap;//下标为weight,值为nodeInfos对应的节点index,提升选择性能
     private volatile int weightIndex = -1;
     private int weightSum;
     private Random random = new Random();
+
+    //todo :手动设置
+    private RoundRobinLoadBalancer roundRobinLoadBalancer =
+            new RoundRobinLoadBalancer(32);
 
     public void addNode(NodeInfo nodeInfo) {
         if (!nodeInfos.contains(nodeInfo)) {
@@ -80,12 +90,16 @@ public class RpcLoadBalance {
             throw new RPCException("######### 当前节点 node：" + node + " 服务不可用！！！");
         }
         //todo 可以进行优化，随机就可以啦，不需要for啦，不然每次也会增加不必要的耗时
-        int size = NodePoolCache.nodeRpcSize(node);
-        int randomIndex = random.nextInt(size);
-        if (randomIndex==0){
+//        int size = NodePoolCache.nodeRpcSize(node);
+//        int randomIndex = random.nextInt(size);
+        int randomIndex = roundRobinLoadBalancer.getNextNum();
+
+//        nodeWeightMap.computeIfAbsent(randomIndex, k -> new AtomicLong()).incrementAndGet();
+
+        if (randomIndex == 0) {
             return channelKeys.get(0);
         }
-        return  channelKeys.get(randomIndex-1);
+        return channelKeys.get(randomIndex);
 //        int index = 0;
 //        for (String channelKey : channelKeys) {
 //            if (index == randomIndex) {
@@ -109,9 +123,14 @@ public class RpcLoadBalance {
                     logger.info("@@@@@@ rpcLoadBalance node:{}",
                             (nodeInfo.getIp() + ":" + nodeInfo.getPort()));
                 }
+                for (Map.Entry<Integer, AtomicLong> entry : nodeWeightMap.entrySet()) {
+                    if (entry.getValue().get() > 0) {
+                        System.out.println("@@@@@@ rpcLoadBalance index:" + entry.getKey()
+                                + " ,count:" + entry.getValue().get());
+                    }
+                }
             }
-        }, 0, 20 * 1000, TimeUnit.MILLISECONDS);
-
+        }, 0, 10 * 1000, TimeUnit.MILLISECONDS);
 
     }
 

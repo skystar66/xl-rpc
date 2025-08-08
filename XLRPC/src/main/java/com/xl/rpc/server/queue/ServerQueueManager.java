@@ -1,5 +1,6 @@
 package com.xl.rpc.server.queue;
 
+import com.lmax.disruptor.BusySpinWaitStrategy;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.SequenceBarrier;
 import com.lmax.disruptor.WorkerPool;
@@ -19,10 +20,11 @@ import java.util.concurrent.Executors;
  */
 public class ServerQueueManager {
     private static ServerQueueManager inst = new ServerQueueManager();
-    private static final int BUFFER_SIZE = 1024 * 1024;
+    private static final int BUFFER_SIZE = 8*1024 * 1024;
     private final RingBuffer<MessageEventClient<Message>> ringBuffer;
 //    private final int threadNum = Runtime.getRuntime().availableProcessors() * 2;
-        private final int threadNum = Runtime.getRuntime().availableProcessors();
+//        private final int threadNum = Runtime.getRuntime().availableProcessors();
+        private final int threadNum = 2;
     private final Executor executor = Executors.newFixedThreadPool(this.threadNum);
 
     private ServerQueueManager() {

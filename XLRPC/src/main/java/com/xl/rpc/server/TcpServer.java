@@ -12,6 +12,7 @@ import com.xl.rpc.reciver.ReciveDataHandler;
 import com.xl.rpc.server.handler.TCPServerHandler;
 import com.xl.rpc.zk.NodeInfo;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -65,8 +66,9 @@ public class TcpServer {
             // 用于启用或关闭Nagle算法。如果要求高实时性，有数据发送时就马上发送，就将该选项设置为true关闭Nagle算法；如果要减少发送次数减少网络交互，就设置为false等累积一定大小后再发送。默认为false。
             b.option(ChannelOption.TCP_NODELAY, false);
             // 缓冲区大小
-            b.option(ChannelOption.SO_RCVBUF, 256 * 1024);
-            b.option(ChannelOption.SO_SNDBUF, 256 * 1024);
+            b.option(ChannelOption.SO_RCVBUF, 32*1024 * 1024);
+            b.option(ChannelOption.SO_SNDBUF, 1024 * 1024);
+            b.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
 
             b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
                     // .handler(new LoggingHandler(LogLevel.INFO)) //日记

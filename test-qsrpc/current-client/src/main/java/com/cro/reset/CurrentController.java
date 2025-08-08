@@ -1,6 +1,9 @@
 package com.cro.reset;
 
 
+import com.cro.limit.RateLimiterLocal;
+import com.cro.statics.StaticsManager;
+import com.google.common.util.concurrent.RateLimiter;
 import com.xl.rpc.callback.Callback;
 import com.xl.rpc.client.RpcClient;
 import com.xl.rpc.client.pool.NodePoolManager;
@@ -11,6 +14,7 @@ import com.xl.rpc.client.queue.disruptor.QueueManager2;
 import com.xl.rpc.client.queue.mem.RpcUpMsgConsumer;
 import com.xl.rpc.message.Message;
 import com.xl.rpc.message.MessageBuf;
+import com.xl.rpc.server.queue.RoundRobinLoadBalancer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,14 +32,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class CurrentController {
 
     private static final int DEFAULT_THREAD_POOL_SIZE = Runtime.getRuntime().availableProcessors() * 2;
+    private  static final long RATE_QPS = 1000000;  // 1百万 QPS 限制
+    private  static final long MAX_QPS = 1000000;  // 1百万 QPS 限制
+    private static long tokens = MAX_QPS;
+    private static final long lastTime = System.currentTimeMillis();
 
-    private static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(DEFAULT_THREAD_POOL_SIZE);
-
+//    static RateLimiter limiter = RateLimiter.create(MAX_QPS);
+    static RateLimiterLocal limiter = new RateLimiterLocal(MAX_QPS, MAX_QPS);
 
     private static ScheduledExecutorService schedule = Executors.newScheduledThreadPool(1);
 
     private final static int PORT = 10086;
-    private final static int count = 62500;// 8 * 125000=100万请求
+    private final static int count = 416600;// 8 * 125000=100万请求
     //        private final static int count = 1;//
     private final static int thread = DEFAULT_THREAD_POOL_SIZE;//x个请求线程
     private final static long totalReqCount = count * thread;//总共请求
@@ -43,12 +51,6 @@ public class CurrentController {
     private final static String zip = "";//gzip snappy
     private final static int timeout = 10_000;
 
-
-    public static void main(String[] args) {
-
-        System.out.println(Runtime.getRuntime().availableProcessors() * 2);
-
-    }
 
     //加上包头包尾长度12字节,可加大测试带宽
     private static byte[] req = new byte[116];
@@ -93,7 +95,9 @@ public class CurrentController {
      * 4，100万并发 压测结果：4-core-> 1000000请求 -> time:18728ms ,qps:53395/s ,流量:7978KB/s ,平均请求延时:0ms
      */
     @RequestMapping(value = "/clientAsync", method = RequestMethod.GET)
-    public String clientAsync() {
+    public String clientAsync(@RequestParam("threadCnt") int threadCnt,
+                              @RequestParam("cnt") int cnt) {
+        ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(threadCnt);
         temp = System.currentTimeMillis();
         //todo
         for (int i = 0; i < thread; i++) {
@@ -117,18 +121,38 @@ public class CurrentController {
      * 4，100万并发 压测结果：4-core-> 1000000请求 -> time:18728ms ,qps:53395/s ,流量:7978KB/s ,平均请求延时:0ms
      */
     @RequestMapping(value = "/clientAsyncWithCall", method = RequestMethod.GET)
-    public String clientAsyncWithCall() {
+    public String clientAsyncWithCall(@RequestParam("cycle") int cycle,
+                                      @RequestParam("threadCnt") int threadCnt,
+                                      @RequestParam("cnt") int count) {
         temp = System.currentTimeMillis();
+        CountDownLatch countDownLatch = new CountDownLatch(count * threadCnt);
+        ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(threadCnt);
         //todo
-        for (int i = 0; i < thread; i++) {
+        for (int i = 0; i < threadCnt; i++) {
             //160万并发：4-core-> time:13403ms ,qps:119376个 ,流量:14922KB/s ,平均请求延时:8194ms
             //100万并发  4-core-> time:7843ms ,qps:127502个 ,流量:15937KB/s ,平均请求延时:3922ms
-            EXECUTOR_SERVICE.submit(asyncPOOLWithCallback);
+            EXECUTOR_SERVICE.submit(() -> {
+                for (int j = 0; j < count; j++) {
+                    try {
+                        Message msg = new Message();
+                        msg.setContent(makeMessage().toByteArray());
+                        msg.setVer((byte) 2);
+                        sendAsyncTestWithCallback(msg);
+                    } catch (Exception e) {
+                        log.error("send err:", e);
+                    } finally {
+                        countDownLatch.countDown();
+                    }
+                }
+            });
         }
-//        schedule.scheduleAtFixedRate(asyncPOOL,
-//                0,500, TimeUnit.MILLISECONDS);
-
-        return "success";
+        try {
+            countDownLatch.await();
+            EXECUTOR_SERVICE.shutdownNow();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return "success," + threadCnt * count + "条数据,共耗时：" + (System.currentTimeMillis() - temp);
     }
 
     /**
@@ -139,8 +163,10 @@ public class CurrentController {
      * 3，100万并发 压测结果：12-core-> 1000008请求 -> time:20049ms ,qps:49878/s ,流量:7452KB/s ,平均请求延时:0ms
      */
     @RequestMapping(value = "/clientSync", method = RequestMethod.GET)
-    public String client(@RequestParam("recount") int recount) {
+    public String client(@RequestParam("threadCnt") int threadCnt,
+                         @RequestParam("recount") int recount) {
         long qpsT = 0;
+        ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(threadCnt);
         for (int j = 0; j < recount; j++) {
             CountDownLatch countDownLatch = new CountDownLatch(count * thread);
             long start = System.currentTimeMillis();
@@ -195,7 +221,7 @@ public class CurrentController {
     //=================使用连接池=================
     static long temp = 0;
     static volatile long requse;
-    static volatile Map<Integer, Long> map = new ConcurrentHashMap<>();
+    static volatile Map<Integer, Long> map = new ConcurrentHashMap<>(512);
 
     static AtomicInteger reqCnt = new AtomicInteger(0);
 
@@ -262,15 +288,16 @@ public class CurrentController {
 
     public static MessageBuf.IMMessage makeMessage() {
         MessageBuf.IMMessage.Builder msgBuilder = MessageBuf.IMMessage.newBuilder();
-        msgBuilder.setFrom(UUID.randomUUID().toString());
+        long currentTimeMillis = System.currentTimeMillis();
+        msgBuilder.setFrom("1L");
         msgBuilder.setTo("0098778899");
         msgBuilder.setContent("12321321312sddasdas");
-        msgBuilder.setCMsgId(System.currentTimeMillis());
+        msgBuilder.setCMsgId(currentTimeMillis);
         msgBuilder.setType(MessageBuf.TypeEnum.ROOM_VALUE);
         msgBuilder.setSubType(MessageBuf.SubTypeEnum.ROOM_DIY_VALUE);
         msgBuilder.setDeviceId("12222222222");
         msgBuilder.setAppId("liveme");
-        msgBuilder.setServerTime(System.currentTimeMillis());
+        msgBuilder.setServerTime(currentTimeMillis);
 //        msgBuilder.setMsgId(Message.createID());
         return msgBuilder.build();
     }
@@ -343,11 +370,33 @@ public class CurrentController {
         RpcClient tcpClient = NodePoolManager.getInstance().
                 chooseRpcClient("com.qrpc.api.ApiServerapiServer");
         if (tcpClient != null) {
-            request.setId(Message.createID());
-            map.put(request.getId(), System.currentTimeMillis());
+            request.setId(Message.autoID());
+            long currentTimeMillis = System.currentTimeMillis();
+            map.put(request.getId(), currentTimeMillis);
             tcpClient.sendAsync(request, timeout);
         }
     }
 
 
+    //异步
+    static void sendAsyncTestWithCallback(Message request) {
+        if (limiter.tryAcquire()) {
+            // 发送消息
+            RpcClient tcpClient = NodePoolManager.getInstance().
+                    chooseRpcClient("com.qrpc.api.ApiServerapiServer");
+            if (tcpClient != null) {
+                request.setId(Message.autoID());
+                tcpClient.sendAsync(request, timeout);
+            }
+        }else {
+            // 如果未获得令牌，则等待，直到获得令牌
+            try {
+                Thread.sleep(10);  // 等待一段时间后重试
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            sendAsyncTestWithCallback(request);  // 递归调用直到成功发送
+        }
+
+    }
 }

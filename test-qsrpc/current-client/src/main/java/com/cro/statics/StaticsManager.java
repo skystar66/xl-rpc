@@ -55,33 +55,11 @@ public class StaticsManager {
     }
 
     private void statics() {
-        if (MapUtils.isEmpty(msgDelayMap)){
-            return;
-        }
         double qps = asyncThroughputMonitor.calculateAndPrintThroughput();
-        //计算平均消息延时
-        OptionalDouble average = msgDelayMap.values().stream()
-                .mapToLong(Long::longValue)
-                .average();
-        msgDelayMap.clear();
-        double avgTime = average.isPresent() ? average.getAsDouble() : 0;
-
-        double v = msgQpsMap.addAndGet(qps);
-
-        long l = lastUpdateTs.get();
-        double totalAvgQps = 0;
-        long consumerMs =0;
-        if (l > 0) {
-             consumerMs = System.currentTimeMillis() - l;
-            totalAvgQps = (double) v / (consumerMs / 1000.0);
-        }
         //输出报告
-        System.out.println("Kafka Performance Test:");
-        System.out.println("Messages Cnt: " + msgDelayMap.size());
+        System.out.println("RPC Performance Test:");
 //        System.out.println("Threads: " + ThreadPoolUtils.getKafkaPool().getMaximumPoolSize());
         System.out.println("Average QPS(s): " + qps);
-        System.out.println("Total Average QPS(s): " + totalAvgQps);
-        System.out.println("Message Latency (in ms): " + avgTime);
         System.out.println("========================================================================= ");
         System.out.println("========================================================================= ");
 

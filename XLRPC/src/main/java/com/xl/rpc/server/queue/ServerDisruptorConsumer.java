@@ -1,5 +1,6 @@
 package com.xl.rpc.server.queue;
 
+import com.google.protobuf.CodedInputStream;
 import com.lmax.disruptor.WorkHandler;
 import com.xl.rpc.client.queue.MessageEventClient;
 import com.xl.rpc.message.Message;
@@ -48,7 +49,8 @@ public class ServerDisruptorConsumer implements WorkHandler<MessageEventClient<M
 
         Message msg = imMessageMessageEventClient.getMsg();
         try {
-
+//            CodedInputStream input = CodedInputStream.newInstance(msg.getContent());
+//            MessageBuf.IMMessage imMessage = MessageBuf.IMMessage.parseFrom(input);
             MessageBuf.IMMessage imMessage = MessageBuf.IMMessage.parseFrom(msg.getContent());
             StaticsManager.getInstance().msgQpsIncrement();
             StaticsManager.getInstance().msgDelayReport((long) msg.getId(),

@@ -1,9 +1,14 @@
 package com.xl.rpc.server.handler;
 
+import com.xl.rpc.client.queue.concurrent.MQProviderC;
 import com.xl.rpc.listener.MessageListener;
 import com.xl.rpc.message.Message;
+import com.xl.rpc.message.MessageBuf;
 import com.xl.rpc.queue.QueueManager;
 import com.xl.rpc.server.queue.ServerQueueManager;
+import com.xl.rpc.server.queue.unlock.MQProviderS;
+import com.xl.rpc.server.queue.unlock.ServerMsgFastQueueConsumer;
+import com.xl.rpc.server.statics.StaticsManager;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
@@ -21,33 +26,55 @@ public class TCPServerHandler extends SimpleChannelInboundHandler<Message> {
 
     //    private ExecutorService executorService = Executors.newFixedThreadPool(256);
 //    private ExecutorService executorService = new ThreadPoolExecutor(
-//            32, 64, 600,
-//            TimeUnit.SECONDS, new LinkedBlockingQueue<>()
-//    );
+//            64, 128, 10,
+//            TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 
     public TCPServerHandler(MessageListener messageListener) {
         this.messageListener = messageListener;
     }
 
-    public static final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
-
 
     public static final AtomicLong count = new AtomicLong(0);
+    public static final AtomicLong bytes = new AtomicLong(0);
 
     static {
 
+        ScheduledExecutorService scheduledExecutorService
+                = Executors.newScheduledThreadPool(1);
         scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                logger.info("server Handler count:{}", count.get());
+                logger.info("server Handler count:{},bytes:{}MB/s", count.getAndSet(0),
+                        bytes.getAndSet(0)/1024/1024);
             }
-        }, 1, 5, TimeUnit.SECONDS);
+        }, 1, 1, TimeUnit.SECONDS);
+
+//        ServerMsgFastQueueConsumer.getInstance().start();
     }
 
     @Override
     protected void channelRead0(final ChannelHandlerContext channel, final Message message) throws Exception {
 
-        ServerQueueManager.getInst().produce(message);
+//        ServerQueueManager.getInst().produce(message);
+        MQProviderS.produce(message);
+
+        count.incrementAndGet();
+
+        bytes.addAndGet(message.bodyLength());
+
+//        executorService.execute(() -> {
+//            try {
+//                MessageBuf.IMMessage imMessage = MessageBuf.IMMessage.parseFrom(message.getContent());
+//                StaticsManager.getInstance().msgQpsIncrement();
+//                StaticsManager.getInstance().msgDelayReport((long) message.getId(),
+//                        System.currentTimeMillis() - imMessage.getServerTime());
+//            } catch (Exception exception) {
+//                logger.error("handler err:{}", exception);
+//            }
+//
+//        });
+
+
         //todo 暂时注释掉
 //        executorService.submit(new Runnable() {
 //            @Override

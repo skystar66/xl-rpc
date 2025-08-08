@@ -75,12 +75,12 @@ public class MessageDecoder extends ByteToMessageDecoder {
         IZip iZip = Zip.get(message.getZip());
         if (iZip != null) content = iZip.uncompress(content);
         message.setContent(content);
-        if (in.readByte() != '\r' || in.readByte() != '\n') {
-            logger.error("decode-end_err(" + ctx + ")");
-            init();
-            ctx.close();
-            return;
-        }
+//        if (in.readByte() != '\r' || in.readByte() != '\n') {
+//            logger.error("decode-end_err(" + ctx + ")");
+//            init();
+//            ctx.close();
+//            return;
+//        }
 
         //解析结束
         out.add(message);

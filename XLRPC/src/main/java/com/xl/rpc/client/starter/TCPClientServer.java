@@ -1,5 +1,6 @@
 package com.xl.rpc.client.starter;
 
+import com.xl.rpc.client.handler.MyOutboundHandler;
 import com.xl.rpc.client.handler.TCPClientHandler;
 import com.xl.rpc.client.handler.KeepaliveHandler;
 import com.xl.rpc.context.NettyContext;
@@ -10,6 +11,7 @@ import com.xl.rpc.reciver.ReciveDataHandler;
 import com.xl.rpc.zip.Zip;
 import com.xl.rpc.zk.NodeInfo;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -17,7 +19,6 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.ssl.SslContext;
 
 public class TCPClientServer {
-
 
 
     // 内部静态类方式
@@ -41,7 +42,7 @@ public class TCPClientServer {
 
     private static final int soRcvbuf = 1024 * 256;
 
-    private static final int soSndbuf = 1024 * 256;
+    private static final int soSndbuf = 32 * 1024 * 1024;
 
     private byte zip, ver;//请求节点的配置
 
@@ -49,7 +50,7 @@ public class TCPClientServer {
 
     private Channel channel;
     // TODO 考虑改成静态,所有连接公用同一个线程池
-    private static EventLoopGroup bossGroup =  new NioEventLoopGroup(Runtime.getRuntime().availableProcessors());
+    private static EventLoopGroup bossGroup = new NioEventLoopGroup(Runtime.getRuntime().availableProcessors() * 2);
 
 
     public TCPClientServer() {
@@ -61,7 +62,7 @@ public class TCPClientServer {
 
     public ChannelFuture connect(NodeInfo nodeInfo) {
 
-        NettyContext.nettyType= NettyType.client;
+        NettyContext.nettyType = NettyType.client;
         if (nodeInfo != null) {
             this.zip = Zip.getInt(nodeInfo.getZip());
             this.ver = nodeInfo.getVer();
@@ -75,6 +76,10 @@ public class TCPClientServer {
             bootstrap.option(ChannelOption.TCP_NODELAY, tcpNodelay);
             bootstrap.option(ChannelOption.SO_RCVBUF, soRcvbuf);
             bootstrap.option(ChannelOption.SO_SNDBUF, soSndbuf);
+            bootstrap.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
+
+            bootstrap.option(ChannelOption.WRITE_BUFFER_LOW_WATER_MARK, 8*1024 * 1024);  // 32 KB
+            bootstrap.option(ChannelOption.WRITE_BUFFER_HIGH_WATER_MARK, 16*1024 * 1024); // 64 KB
 
             bootstrap.group(bossGroup).channel(NioSocketChannel.class).handler(new ChannelInitializer<SocketChannel>() {
                 @Override
@@ -86,11 +91,12 @@ public class TCPClientServer {
                         pipeline.addLast(sslContext.newHandler(ch.alloc()));
                     }
 
-                    pipeline.addLast(new MessageEncoder());// tcp消息编码
+                    pipeline.addLast(MessageEncoder.INSTANCE);// tcp消息编码
                     pipeline.addLast(new MessageDecoder());// tcp消息解码
 
                     pipeline.addLast(new KeepaliveHandler());//心跳
                     pipeline.addLast(new ReciveDataHandler());
+                    pipeline.addLast(new MyOutboundHandler());
                     pipeline.addLast(new TCPClientHandler());
 
                 }
@@ -120,7 +126,6 @@ public class TCPClientServer {
             bossGroup.shutdownGracefully();
 
     }
-
 
 
 }

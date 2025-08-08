@@ -21,7 +21,7 @@ public class ThreadPoolUtils {
     private static ExecutorService executorService;
 
     public ExecutorService init(){
-        executorService = Executors.newFixedThreadPool(50);
+        executorService = Executors.newFixedThreadPool(2);
         return executorService;
     }
 
