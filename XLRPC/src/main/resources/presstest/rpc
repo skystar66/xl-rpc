@@ -1,0 +1,309 @@
+client
+
+client Handler sendQps:159264/s send bytes:11MB/s
+client Handler sendQps:274202/s send bytes:19MB/s
+client Handler sendQps:367732/s send bytes:26MB/s
+client Handler sendQps:440046/s send bytes:31MB/s
+client Handler sendQps:293098/s send bytes:21MB/s
+client Handler sendQps:332773/s send bytes:24MB/s
+client Handler sendQps:356409/s send bytes:25MB/s
+client Handler sendQps:513723/s send bytes:37MB/s
+client Handler sendQps:853920/s send bytes:61MB/s
+client Handler sendQps:1095003/s send bytes:79MB/s
+client Handler sendQps:680930/s send bytes:49MB/s
+client Handler sendQps:584216/s send bytes:42MB/s
+client Handler sendQps:721852/s send bytes:52MB/s
+client Handler sendQps:644567/s send bytes:46MB/s
+client Handler sendQps:790007/s send bytes:57MB/s
+client Handler sendQps:796583/s send bytes:57MB/s
+client Handler sendQps:183084/s send bytes:13MB/s
+client Handler sendQps:741023/s send bytes:53MB/s
+client Handler sendQps:734199/s send bytes:53MB/s
+client Handler sendQps:716884/s send bytes:51MB/s
+client Handler sendQps:859480/s send bytes:62MB/s
+client Handler sendQps:602272/s send bytes:43MB/s
+client Handler sendQps:127822/s send bytes:9MB/s
+client Handler sendQps:748602/s send bytes:54MB/s
+client Handler sendQps:1188593/s send bytes:86MB/s
+client Handler sendQps:1322789/s send bytes:95MB/s
+client Handler sendQps:1027348/s send bytes:74MB/s
+client Handler sendQps:1318234/s send bytes:95MB/s
+client Handler sendQps:378586/s send bytes:27MB/s
+client Handler sendQps:391806/s send bytes:28MB/s
+client Handler sendQps:359027/s send bytes:26MB/s
+client Handler sendQps:371989/s send bytes:26MB/s
+
+
+
+server
+
+
+RPC Performance Test:
+Messages Cnt: 110905
+Total Messages Cnt: 19520184
+Average QPS(s): 5356.817840892045
+Message Latency (in ms): 598.8799217235319
+=========================================================================
+=========================================================================
+2025-08-08 14:32:00.517 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:129829,bytes:9MB/s
+2025-08-08 14:32:01.514 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:274486,bytes:19MB/s
+RPC Performance Test:
+Messages Cnt: 303946
+Total Messages Cnt: 19824130
+Average QPS(s): 270750.2497502498
+Message Latency (in ms): 903.4735366818788
+=========================================================================
+=========================================================================
+RPC Performance Test:
+Messages Cnt: 87059
+Total Messages Cnt: 19911189
+Average QPS(s): 195374.1223671013
+Message Latency (in ms): 1345.9693151634137
+=========================================================================
+=========================================================================
+2025-08-08 14:32:02.519 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:198627,bytes:14MB/s
+2025-08-08 14:32:03.515 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:376305,bytes:27MB/s
+RPC Performance Test:
+Messages Cnt: 404921
+Total Messages Cnt: 20316110
+Average QPS(s): 372399.60039960046
+Message Latency (in ms): 1770.0461092244532
+=========================================================================
+=========================================================================
+2025-08-08 14:32:04.514 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:411125,bytes:29MB/s
+RPC Performance Test:
+Messages Cnt: 397046
+Total Messages Cnt: 20713156
+Average QPS(s): 442487.4874874875
+Message Latency (in ms): 2333.911429946307
+=========================================================================
+=========================================================================
+2025-08-08 14:32:05.518 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:425859,bytes:30MB/s
+RPC Performance Test:
+Messages Cnt: 422458
+Total Messages Cnt: 21135614
+Average QPS(s): 423258.22532402794
+Message Latency (in ms): 2979.9275551921505
+=========================================================================
+=========================================================================
+2025-08-08 14:32:06.514 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:317892,bytes:23MB/s
+RPC Performance Test:
+Messages Cnt: 308288
+Total Messages Cnt: 21443902
+Average QPS(s): 264813.44032096287
+Message Latency (in ms): 3633.3454401867875
+=========================================================================
+=========================================================================
+RPC Performance Test:
+Messages Cnt: 328705
+Total Messages Cnt: 21772607
+Average QPS(s): 373952.14356929215
+Message Latency (in ms): 4328.2942192314185
+=========================================================================
+=========================================================================
+2025-08-08 14:32:07.520 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:400434,bytes:29MB/s
+2025-08-08 14:32:08.514 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:279884,bytes:20MB/s
+RPC Performance Test:
+Messages Cnt: 330596
+Total Messages Cnt: 22103203
+Average QPS(s): 218811.623246493
+Message Latency (in ms): 5244.915129173231
+=========================================================================
+=========================================================================
+2025-08-08 14:32:09.518 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:441938,bytes:32MB/s
+RPC Performance Test:
+Messages Cnt: 252530
+Total Messages Cnt: 22355733
+Average QPS(s): 439213.2132132132
+Message Latency (in ms): 5507.253363583602
+=========================================================================
+=========================================================================
+2025-08-08 14:32:10.517 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:775994,bytes:56MB/s
+RPC Performance Test:
+Messages Cnt: 841368
+Total Messages Cnt: 23197101
+Average QPS(s): 835490.0793650794
+Message Latency (in ms): 5800.360544535816
+=========================================================================
+=========================================================================
+2025-08-08 14:32:11.516 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:447999,bytes:32MB/s
+RPC Performance Test:
+Messages Cnt: 468477
+Total Messages Cnt: 23665578
+Average QPS(s): 481763.63636363635
+Message Latency (in ms): 6160.090810680221
+=========================================================================
+=========================================================================
+2025-08-08 14:32:12.517 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:542201,bytes:39MB/s
+RPC Performance Test:
+Messages Cnt: 428670
+Total Messages Cnt: 24094248
+Average QPS(s): 456083.7487537388
+Message Latency (in ms): 6853.73962780488
+=========================================================================
+=========================================================================
+RPC Performance Test:
+Messages Cnt: 430998
+Total Messages Cnt: 24525246
+Average QPS(s): 515924.8496993988
+Message Latency (in ms): 6655.735010371278
+=========================================================================
+=========================================================================
+2025-08-08 14:32:13.516 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:426265,bytes:30MB/s
+2025-08-08 14:32:14.515 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:477782,bytes:34MB/s
+RPC Performance Test:
+Messages Cnt: 527229
+Total Messages Cnt: 25052475
+Average QPS(s): 495498.50448654045
+Message Latency (in ms): 7727.670938146929
+=========================================================================
+=========================================================================
+2025-08-08 14:32:15.516 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:517401,bytes:37MB/s
+RPC Performance Test:
+Messages Cnt: 523289
+Total Messages Cnt: 25575764
+Average QPS(s): 461783.3500501505
+Message Latency (in ms): 7667.413232466432
+=========================================================================
+=========================================================================
+2025-08-08 14:32:16.514 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:749125,bytes:54MB/s
+RPC Performance Test:
+Messages Cnt: 1012690
+Total Messages Cnt: 26588454
+Average QPS(s): 777865.0
+Message Latency (in ms): 8335.615522677777
+=========================================================================
+=========================================================================
+2025-08-08 14:32:17.518 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:612696,bytes:44MB/s
+RPC Performance Test:
+Messages Cnt: 254296
+Total Messages Cnt: 26842750
+Average QPS(s): 640435.0775193798
+Message Latency (in ms): 7382.858629864046
+=========================================================================
+=========================================================================
+2025-08-08 14:32:18.517 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:419965,bytes:30MB/s
+RPC Performance Test:
+Messages Cnt: 433420
+Total Messages Cnt: 27276170
+Average QPS(s): 401881.32094943244
+Message Latency (in ms): 8847.122677988276
+=========================================================================
+=========================================================================
+2025-08-08 14:32:19.515 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:438479,bytes:31MB/s
+RPC Performance Test:
+Messages Cnt: 403082
+Total Messages Cnt: 27679252
+Average QPS(s): 442033.0
+Message Latency (in ms): 9215.359593606387
+=========================================================================
+=========================================================================
+2025-08-08 14:32:20.515 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:556478,bytes:40MB/s
+RPC Performance Test:
+Messages Cnt: 593774
+Total Messages Cnt: 28273026
+Average QPS(s): 530743.7437437437
+Message Latency (in ms): 9452.37607742754
+=========================================================================
+=========================================================================
+2025-08-08 14:32:21.515 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:701106,bytes:50MB/s
+RPC Performance Test:
+Messages Cnt: 525324
+Total Messages Cnt: 28798350
+Average QPS(s): 752584.0796019902
+Message Latency (in ms): 9350.08796519313
+=========================================================================
+=========================================================================
+2025-08-08 14:32:22.514 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:663422,bytes:48MB/s
+RPC Performance Test:
+Messages Cnt: 653957
+Total Messages Cnt: 29452307
+Average QPS(s): 609481.4814814815
+Message Latency (in ms): 9556.804622996035
+=========================================================================
+=========================================================================
+2025-08-08 14:32:23.517 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:599775,bytes:43MB/s
+RPC Performance Test:
+Messages Cnt: 727685
+Total Messages Cnt: 30179992
+Average QPS(s): 514306.2248995984
+Message Latency (in ms): 9604.643482523936
+=========================================================================
+=========================================================================
+2025-08-08 14:32:24.514 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:683698,bytes:49MB/s
+RPC Performance Test:
+Messages Cnt: 545037
+Total Messages Cnt: 30725029
+Average QPS(s): 728285.0
+Message Latency (in ms): 10721.410532530654
+=========================================================================
+=========================================================================
+2025-08-08 14:32:25.517 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:1251599,bytes:90MB/s
+RPC Performance Test:
+Messages Cnt: 1396964
+Total Messages Cnt: 32121993
+Average QPS(s): 1076223.7762237764
+Message Latency (in ms): 10349.575981417458
+=========================================================================
+=========================================================================
+2025-08-08 14:32:26.518 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:865933,bytes:62MB/s
+RPC Performance Test:
+Messages Cnt: 652333
+Total Messages Cnt: 32774326
+Average QPS(s): 1020968.9378757515
+Message Latency (in ms): 10622.575275630767
+=========================================================================
+=========================================================================
+RPC Performance Test:
+Messages Cnt: 707312
+Total Messages Cnt: 33481638
+Average QPS(s): 712514.9402390438
+Message Latency (in ms): 13283.325386384377
+=========================================================================
+=========================================================================
+2025-08-08 14:32:27.518 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:745254,bytes:54MB/s
+2025-08-08 14:32:28.517 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:660945,bytes:47MB/s
+RPC Performance Test:
+Messages Cnt: 742600
+Total Messages Cnt: 34224238
+Average QPS(s): 759151.0
+Message Latency (in ms): 12911.8247928675
+=========================================================================
+=========================================================================
+RPC Performance Test:
+Messages Cnt: 495183
+Total Messages Cnt: 34719421
+Average QPS(s): 554185.55667001
+Message Latency (in ms): 11845.769450889873
+=========================================================================
+=========================================================================
+2025-08-08 14:32:29.518 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:613644,bytes:44MB/s
+2025-08-08 14:32:30.513 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:528936,bytes:38MB/s
+RPC Performance Test:
+Messages Cnt: 644611
+Total Messages Cnt: 35364032
+Average QPS(s): 554067.8642714571
+Message Latency (in ms): 11449.08244033502
+=========================================================================
+=========================================================================
+RPC Performance Test:
+Messages Cnt: 449646
+Total Messages Cnt: 35813678
+Average QPS(s): 536707.5848303393
+Message Latency (in ms): 10663.610802905321
+=========================================================================
+=========================================================================
+2025-08-08 14:32:31.513 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:532356,bytes:38MB/s
+2025-08-08 14:32:32.518 [pool-4-thread-1] INFO  TCPServerHandler - server Handler count:1396825,bytes:101MB/s
+RPC Performance Test:
+Messages Cnt: 1382930
+Total Messages Cnt: 37196608
+Average QPS(s): 1225973.973973974
+Message Latency (in ms): 14525.05812536537
+=========================================================================
+=========================================================================
+
+
+
+
+
